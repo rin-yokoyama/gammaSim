@@ -47,8 +47,13 @@ namespace B1
 
   void EventAction::BeginOfEventAction(const G4Event *)
   {
-    auto vec = *fRunAction->GetDataVec();
+    auto vec = *fRunAction->GetSiDataVec();
     for (auto &data : vec)
+    {
+      data = 0.0;
+    }
+    auto vec2 = *fRunAction->GetCsIDataVec();
+    for (auto &data : vec2)
     {
       data = 0.0;
     }
@@ -68,7 +73,16 @@ namespace B1
   {
     if (copy_num >= 0 && copy_num < B1::kNSiStrips)
     {
-      auto dataVec = *fRunAction->GetDataVec();
+      auto &dataVec = *fRunAction->GetSiDataVec();
+      dataVec[copy_num] += edep;
+    }
+  }
+
+  void EventAction::AddCsIEdep(G4double edep, G4int copy_num)
+  {
+    if (copy_num >= 0 && copy_num < 4)
+    {
+      auto &dataVec = *fRunAction->GetCsIDataVec();
       dataVec[copy_num] += edep;
     }
   }

@@ -45,7 +45,7 @@ namespace B1
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  RunAction::RunAction(TTree *tree, std::vector<G4double> *data) : fTree(tree), fDataVec(data)
+  RunAction::RunAction(TTree *tree, std::vector<G4double> *si_data, std::vector<G4double> *csi_data) : fTree(tree), fSiDataVec(si_data), fCsIDataVec(csi_data)
   {
   }
 

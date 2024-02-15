@@ -81,16 +81,21 @@ int main(int argc, char **argv)
 
   // Physics list
   G4VModularPhysicsList *physicsList = new QBBC;
+  // G4VModularPhysicsList *physicsList = new LHEP;
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
 
   auto rootFile = new TFile("output.root", "recreate");
   auto rootTree = new TTree("tree", "tree");
+
   std::vector<G4double> edepVec(B1::kNSiStrips, 0.0);
   const std::string brString = "siStrips[" + std::to_string(B1::kNSiStrips) + "]/D";
   rootTree->Branch("siStrips", edepVec.data(), brString.c_str());
+
+  std::vector<G4double> edepCsIVec(4, 0.0);
+  rootTree->Branch("siStrips", edepVec.data(), "CsI[4]/D");
   // User action initialization
-  runManager->SetUserInitialization(new ActionInitialization(rootTree, &edepVec));
+  runManager->SetUserInitialization(new ActionInitialization(rootTree, &edepVec, &edepCsIVec));
 
   // Initialize visualization
   //

@@ -125,6 +125,31 @@ namespace B1
     //
     fScoringVolume = siStripLogic;
 
+    auto CsISolid = new G4Box("CsI", 0.5 * B1::kCsISize, 0.5 * B1::kCsISize, 0.5 * B1::kCsIThickness);
+    auto CsILogic = new G4LogicalVolume(CsISolid, // its solid
+                                        gps,      // its material
+                                        "CsI");   // its name
+    std::vector<G4ThreeVector> CsIPosVec;
+    for (int i = 0; i < 4; ++i)
+    {
+      CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset, B1::kSiYOffset, B1::kSiZOffset + B1::kCsIZOffset));
+    }
+
+    {
+      G4int i_crystal = 0;
+      for (const auto &vec : CsIPosVec)
+      {
+        new G4PVPlacement(nullptr,        // no rotation
+                          vec,            // at position
+                          CsILogic,       // its logical volume
+                          "CsI",          // its name
+                          logicWorld,     // its mother  volume
+                          false,          // no boolean operation
+                          i_crystal,      // copy number
+                          checkOverlaps); // overlaps checking
+        ++i_crystal;
+      }
+    }
     //
     // always return the physical World
     //

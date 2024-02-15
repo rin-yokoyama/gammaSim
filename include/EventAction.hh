@@ -53,6 +53,7 @@ namespace B1
     void EndOfEventAction(const G4Event *event) override;
 
     void AddSiEdep(G4double edep, G4int copy_num);
+    void AddCsIEdep(G4double edep, G4int copy_num);
 
   private:
     RunAction *fRunAction = nullptr;

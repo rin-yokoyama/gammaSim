@@ -40,7 +40,7 @@ namespace B1
 
   void ActionInitialization::BuildForMaster() const
   {
-    auto runAction = new RunAction(fTree, fDataVec);
+    auto runAction = new RunAction(fTree, fSiDataVec, fCsIDataVec);
     SetUserAction(runAction);
   }
 
@@ -50,7 +50,7 @@ namespace B1
   {
     SetUserAction(new PrimaryGeneratorAction);
 
-    auto runAction = new RunAction(fTree, fDataVec);
+    auto runAction = new RunAction(fTree, fSiDataVec, fCsIDataVec);
     SetUserAction(runAction);
 
     auto eventAction = new EventAction(runAction);

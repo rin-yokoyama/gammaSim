@@ -52,18 +52,20 @@ namespace B1
   class RunAction : public G4UserRunAction
   {
   public:
-    RunAction(TTree *tree, std::vector<G4double> *data);
+    RunAction(TTree *tree, std::vector<G4double> *si_data, std::vector<G4double> *csi_data);
     ~RunAction() override = default;
 
     void BeginOfRunAction(const G4Run *) override;
     void EndOfRunAction(const G4Run *) override;
 
     void FillTree();
-    std::vector<G4double> *GetDataVec() { return fDataVec; }
+    std::vector<G4double> *GetSiDataVec() { return fSiDataVec; }
+    std::vector<G4double> *GetCsIDataVec() { return fCsIDataVec; }
 
   private:
     TTree *fTree = nullptr;
-    std::vector<G4double> *fDataVec;
+    std::vector<G4double> *fSiDataVec;
+    std::vector<G4double> *fCsIDataVec;
   };
 
 }
