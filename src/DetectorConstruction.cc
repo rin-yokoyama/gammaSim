@@ -130,10 +130,10 @@ namespace B1
                                         gps,      // its material
                                         "CsI");   // its name
     std::vector<G4ThreeVector> CsIPosVec;
-    for (int i = 0; i < 4; ++i)
-    {
-      CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset, B1::kSiYOffset, B1::kSiZOffset + B1::kCsIZOffset));
-    }
+    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset + 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize + 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
+    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset - 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize + 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
+    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset + 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize - 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
+    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset - 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize - 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
 
     {
       G4int i_crystal = 0;
