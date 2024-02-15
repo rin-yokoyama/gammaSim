@@ -1,0 +1,13 @@
+/*
+!.vscode/
+!include/
+!src/
+!.gitignore
+!CMakeLists.txt
+!exampleB1.cc
+!init_vis.mac
+!README
+!run1.mac
+!run2.mac
+!tsg_offscreen.mac
+!vis.mac
