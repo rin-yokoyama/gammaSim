@@ -36,27 +36,40 @@
 namespace B1
 {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EventAction::EventAction(RunAction* runAction)
-: fRunAction(runAction)
-{}
+  EventAction::EventAction(RunAction *runAction)
+      : fRunAction(runAction)
+  {
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EventAction::BeginOfEventAction(const G4Event*)
-{
-  fEdep = 0.;
-}
+  void EventAction::BeginOfEventAction(const G4Event *)
+  {
+    auto vec = *fRunAction->GetDataVec();
+    for (auto &data : vec)
+    {
+      data = 0.0;
+    }
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EventAction::EndOfEventAction(const G4Event*)
-{
-  // accumulate statistics in run action
-  fRunAction->AddEdep(fEdep);
-}
+  void EventAction::EndOfEventAction(const G4Event *)
+  {
+    // accumulate statistics in run action
+    fRunAction->FillTree();
+  }
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+  void EventAction::AddSiEdep(G4double edep, G4int copy_num)
+  {
+    if (copy_num >= 0 && copy_num < B1::kNSiStrips)
+    {
+      auto dataVec = *fRunAction->GetDataVec();
+      dataVec[copy_num] += edep;
+    }
+  }
 }

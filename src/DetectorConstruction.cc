@@ -39,6 +39,7 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
+#include "ExpConstants.hh"
 
 namespace B1
 {
@@ -57,8 +58,8 @@ namespace B1
     //
     // World
     //
-    G4double world_sizeXY = 10 * cm;
-    G4double world_sizeZ = 10 * cm;
+    G4double world_sizeXY = B1::kWorldSize;
+    G4double world_sizeZ = B1::kWorldSize;
     G4Material *world_mat = nist->FindOrBuildMaterial("G4_AIR");
 
     auto solidWorld = new G4Box("World",                                                    // its name
@@ -90,30 +91,39 @@ namespace B1
       gps->AddElement(elemO, 5);
     }
 
+    G4Material *si_mat = nist->FindOrBuildMaterial("G4_Si");
+
+    const G4double si_strip_width = B1::kSiSize / B1::kNSiStrips;
+    std::vector<G4ThreeVector> pos_vec;
+    for (int i = 0; i < B1::kNSiStrips; ++i)
+    {
+      pos_vec.emplace_back(G4ThreeVector(0, si_strip_width * i, 0));
+    }
+
+    auto siStripSolid = new G4Box("Strip", 0.5 * B1::kSiSize, 0.5 * si_strip_width, 0.5 * B1::kSiThickness);
+
+    auto siStripLogic = new G4LogicalVolume(siStripSolid, // its solid
+                                            si_mat,       // its material
+                                            "SiStrip");   // its name
+
+    {
+      G4int i_strip = 0;
+      for (const auto &vec : pos_vec)
+      {
+        new G4PVPlacement(nullptr,        // no rotation
+                          vec,            // at position
+                          siStripLogic,   // its logical volume
+                          "SiStrip",      // its name
+                          logicWorld,     // its mother  volume
+                          false,          // no boolean operation
+                          i_strip,        // copy number
+                          checkOverlaps); // overlaps checking
+        ++i_strip;
+      }
+    }
+    // Set siStip as scoring volume
     //
-    // Shape 1
-    //
-    G4ThreeVector pos1 = G4ThreeVector(0, 0, 0);
-
-    const G4double shape1_size = 5.0 * mm;
-    auto sampleCrystalSolid = new G4Box("Shape1", 0.5 * shape1_size, 0.5 * shape1_size, 0.5 * shape1_size);
-
-    auto sampleCrystalLogic = new G4LogicalVolume(sampleCrystalSolid, // its solid
-                                                  gps,                // its material
-                                                  "SampleCrystal");   // its name
-
-    new G4PVPlacement(nullptr,            // no rotation
-                      pos1,               // at position
-                      sampleCrystalLogic, // its logical volume
-                      "SampleCrystal",    // its name
-                      logicWorld,         // its mother  volume
-                      false,              // no boolean operation
-                      0,                  // copy number
-                      checkOverlaps);     // overlaps checking
-
-    // Set Shape2 as scoring volume
-    //
-    fScoringVolume = sampleCrystalLogic;
+    fScoringVolume = siStripLogic;
 
     //
     // always return the physical World

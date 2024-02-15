@@ -43,6 +43,8 @@
 #include "TFile.h"
 #include "TTree.h"
 
+#include "ExpConstants.hh"
+
 using namespace B1;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -61,20 +63,20 @@ int main(int argc, char **argv)
   // G4Random::setTheEngine(new CLHEP::MTwistEngine);
 
   // use G4SteppingVerboseWithUnits
-  //G4int precision = 4;
-  //G4SteppingVerbose::UseBestUnit(precision);
+  // G4int precision = 4;
+  // G4SteppingVerbose::UseBestUnit(precision);
 
   // Construct the default run manager
   //
   auto *runManager =
       G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
-//#ifdef G4MULTITHREADED
+  // #ifdef G4MULTITHREADED
   runManager->SetNumberOfThreads(4);
-//#endif
-  // Set mandatory initialization classes
+  // #endif
+  //  Set mandatory initialization classes
   //
-  // Detector construction
+  //  Detector construction
   runManager->SetUserInitialization(new DetectorConstruction());
 
   // Physics list
@@ -84,10 +86,11 @@ int main(int argc, char **argv)
 
   auto rootFile = new TFile("output.root", "recreate");
   auto rootTree = new TTree("tree", "tree");
-  G4double edep = 0;
-  rootTree->Branch("edep", &edep, "edep/D");
+  std::vector<G4double> edepVec(B1::kNSiStrips, 0.0);
+  const std::string brString = "siStrips[" + std::to_string(B1::kNSiStrips) + "]/D";
+  rootTree->Branch("siStrips", edepVec.data(), brString.c_str());
   // User action initialization
-  runManager->SetUserInitialization(new ActionInitialization(rootTree, &edep));
+  runManager->SetUserInitialization(new ActionInitialization(rootTree, &edepVec));
 
   // Initialize visualization
   //

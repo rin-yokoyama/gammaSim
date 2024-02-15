@@ -30,8 +30,10 @@
 #ifndef B1EventAction_h
 #define B1EventAction_h 1
 
+#include <vector>
 #include "G4UserEventAction.hh"
 #include "globals.hh"
+#include "ExpConstants.hh"
 
 /// Event action class
 ///
@@ -39,28 +41,25 @@
 namespace B1
 {
 
-class RunAction;
+  class RunAction;
 
-class EventAction : public G4UserEventAction
-{
+  class EventAction : public G4UserEventAction
+  {
   public:
-    EventAction(RunAction* runAction);
+    EventAction(RunAction *runAction);
     ~EventAction() override = default;
 
-    void BeginOfEventAction(const G4Event* event) override;
-    void EndOfEventAction(const G4Event* event) override;
+    void BeginOfEventAction(const G4Event *event) override;
+    void EndOfEventAction(const G4Event *event) override;
 
-    void AddEdep(G4double edep) { fEdep += edep; }
+    void AddSiEdep(G4double edep, G4int copy_num);
 
   private:
-    RunAction* fRunAction = nullptr;
-    G4double   fEdep = 0.;
-};
+    RunAction *fRunAction = nullptr;
+  };
 
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif
-
-

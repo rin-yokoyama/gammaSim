@@ -39,35 +39,39 @@
 namespace B1
 {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::SteppingAction(EventAction* eventAction)
-: fEventAction(eventAction)
-{}
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void SteppingAction::UserSteppingAction(const G4Step* step)
-{
-  if (!fScoringVolume) {
-    const auto detConstruction = static_cast<const DetectorConstruction*>(
-      G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    fScoringVolume = detConstruction->GetScoringVolume();
+  SteppingAction::SteppingAction(EventAction *eventAction)
+      : fEventAction(eventAction)
+  {
   }
 
-  // get volume of the current step
-  G4LogicalVolume* volume
-    = step->GetPreStepPoint()->GetTouchableHandle()
-      ->GetVolume()->GetLogicalVolume();
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  // check if we are in scoring volume
-  if (volume != fScoringVolume) return;
+  void SteppingAction::UserSteppingAction(const G4Step *step)
+  {
+    if (!fScoringVolume)
+    {
+      const auto detConstruction = static_cast<const DetectorConstruction *>(
+          G4RunManager::GetRunManager()->GetUserDetectorConstruction());
+      fScoringVolume = detConstruction->GetScoringVolume();
+    }
 
-  // collect energy deposited in this step
-  G4double edepStep = step->GetTotalEnergyDeposit();
-  fEventAction->AddEdep(edepStep);
-}
+    // get volume of the current step
+    G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+    // check if we are in scoring volume
+    if (volume != fScoringVolume)
+      return;
+
+    // collect energy deposited in this step
+    G4double edepStep = step->GetTotalEnergyDeposit();
+    G4int copyNum = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetCopyNo();
+
+    if (volume->GetName() == "SiStrip")
+      fEventAction->AddSiEdep(edepStep, copyNum);
+  }
+
+  //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 }

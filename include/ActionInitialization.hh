@@ -30,6 +30,7 @@
 #ifndef B1ActionInitialization_h
 #define B1ActionInitialization_h 1
 
+#include "globals.hh"
 #include "G4VUserActionInitialization.hh"
 #include "TTree.h"
 
@@ -43,14 +44,14 @@ namespace B1
   public:
     ActionInitialization() = default;
     ~ActionInitialization() override = default;
-    ActionInitialization(TTree *tree, double *data) : fTree(tree), fData(data) {}
+    ActionInitialization(TTree *tree, std::vector<double> *data) : fTree(tree), fDataVec(data) {}
 
     void BuildForMaster() const override;
     void Build() const override;
 
   private:
     TTree *fTree;
-    double *fData;
+    std::vector<G4double> *fDataVec;
   };
 
 }

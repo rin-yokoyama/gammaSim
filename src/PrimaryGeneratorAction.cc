@@ -52,9 +52,9 @@ namespace B1
     // default particle kinematic
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName;
-    G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "gamma");
+    G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "proton");
     fParticleGun->SetParticleDefinition(particle);
-    fParticleGun->SetParticleEnergy(1.436 * MeV);
+    fParticleGun->SetParticleEnergy(10.0 * MeV);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -75,34 +75,34 @@ namespace B1
     // on DetectorConstruction class we get Envelope volume
     // from G4LogicalVolumeStore.
 
-    G4double size = 5.0 * mm;
+    // G4double size = 5.0 * mm;
 
-    if (!fEnvelopeBox)
-    {
-      G4LogicalVolume *envLV = G4LogicalVolumeStore::GetInstance()->GetVolume("SampleCrystal");
-      if (envLV)
-        fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
-    }
+    // if (!fEnvelopeBox)
+    //{
+    //   G4LogicalVolume *envLV = G4LogicalVolumeStore::GetInstance()->GetVolume("SampleCrystal");
+    //   if (envLV)
+    //     fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
+    // }
 
-    if (fEnvelopeBox)
-    {
-      size = fEnvelopeBox->GetXHalfLength() * 2.;
-    }
-    else
-    {
-      G4ExceptionDescription msg;
-      msg << "Envelope volume of box shape not found.\n";
-      msg << "Perhaps you have changed geometry.\n";
-      msg << "The gun will be place at the center.";
-      G4Exception("PrimaryGeneratorAction::GeneratePrimaries()",
-                  "MyCode0002", JustWarning, msg);
-    }
+    // if (fEnvelopeBox)
+    //{
+    //   size = fEnvelopeBox->GetXHalfLength() * 2.;
+    // }
+    // else
+    //{
+    //   G4ExceptionDescription msg;
+    //   msg << "Envelope volume of box shape not found.\n";
+    //   msg << "Perhaps you have changed geometry.\n";
+    //   msg << "The gun will be place at the center.";
+    //   G4Exception("PrimaryGeneratorAction::GeneratePrimaries()",
+    //               "MyCode0002", JustWarning, msg);
+    // }
 
-    G4double x0 = size * (G4UniformRand() - 0.5);
-    G4double y0 = size * (G4UniformRand() - 0.5);
-    G4double z0 = size * (G4UniformRand() - 0.5);
+    // G4double x0 = size * (G4UniformRand() - 0.5);
+    // G4double y0 = size * (G4UniformRand() - 0.5);
+    // G4double z0 = size * (G4UniformRand() - 0.5);
 
-    fParticleGun->SetParticlePosition(G4ThreeVector(x0, y0, z0));
+    // fParticleGun->SetParticlePosition(G4ThreeVector(x0, y0, z0));
 
     {
       const G4double cosTheta = G4UniformRand();

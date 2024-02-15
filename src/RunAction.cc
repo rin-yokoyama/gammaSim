@@ -45,13 +45,8 @@ namespace B1
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  RunAction::RunAction(TTree *tree, G4double *data) : fTree(tree), fEdepEvent(data)
+  RunAction::RunAction(TTree *tree, std::vector<G4double> *data) : fTree(tree), fDataVec(data)
   {
-
-    // Register accumulable to the accumulable manager
-    G4AccumulableManager *accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager->RegisterAccumulable(fEdep);
-    accumulableManager->RegisterAccumulable(fEdep2);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -60,10 +55,6 @@ namespace B1
   {
     // inform the runManager to save random number seed
     G4RunManager::GetRunManager()->SetRandomNumberStore(false);
-
-    // reset accumulables to their initial values
-    G4AccumulableManager *accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager->Reset();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -73,27 +64,6 @@ namespace B1
     G4int nofEvents = run->GetNumberOfEvent();
     if (nofEvents == 0)
       return;
-
-    // Merge accumulables
-    G4AccumulableManager *accumulableManager = G4AccumulableManager::Instance();
-    accumulableManager->Merge();
-
-    // Compute dose = total energy deposit in a run and its variance
-    //
-    G4double edep = fEdep.GetValue();
-    G4double edep2 = fEdep2.GetValue();
-
-    G4double rms = edep2 - edep * edep / nofEvents;
-    if (rms > 0.)
-      rms = std::sqrt(rms);
-    else
-      rms = 0.;
-
-    const auto detConstruction = static_cast<const DetectorConstruction *>(
-        G4RunManager::GetRunManager()->GetUserDetectorConstruction());
-    G4double mass = detConstruction->GetScoringVolume()->GetMass();
-    G4double dose = edep / mass;
-    G4double rmsDose = rms / mass;
 
     // Run conditions
     //  note: There is no primary generator action object for "master"
@@ -128,23 +98,14 @@ namespace B1
     G4cout
         << G4endl
         << " The run consists of " << nofEvents << " " << runCondition
-        << G4endl
-        << " Cumulated dose per run, in scoring volume : "
-        << G4BestUnit(dose, "Dose") << " rms = " << G4BestUnit(rmsDose, "Dose")
-        << G4endl
-        << "------------------------------------------------------------"
-        << G4endl
         << G4endl;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void RunAction::AddEdep(G4double edep)
+  void RunAction::FillTree()
   {
-    *fEdepEvent = edep;
     fTree->Fill();
-    fEdep += edep;
-    fEdep2 += edep * edep;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
