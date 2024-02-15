@@ -97,7 +97,7 @@ namespace B1
     std::vector<G4ThreeVector> pos_vec;
     for (int i = 0; i < B1::kNSiStrips; ++i)
     {
-      pos_vec.emplace_back(G4ThreeVector(0, si_strip_width * i, 0));
+      pos_vec.emplace_back(G4ThreeVector(B1::kSiXOffset, B1::kSiYOffset + si_strip_width * i, B1::kSiZOffset));
     }
 
     auto siStripSolid = new G4Box("Strip", 0.5 * B1::kSiSize, 0.5 * si_strip_width, 0.5 * B1::kSiThickness);
