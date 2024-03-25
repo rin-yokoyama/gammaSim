@@ -54,7 +54,10 @@ namespace B1
     G4String particleName;
     G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "proton");
     fParticleGun->SetParticleDefinition(particle);
-    fParticleGun->SetParticleEnergy(10.0 * MeV);
+
+    fProtonGenerator = new ProtonGenerator;
+    fProtonGenerator->Clear();
+    fProtonGenerator->ReadFile("work/Ce148pp_2_lab.out");
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -75,44 +78,11 @@ namespace B1
     // on DetectorConstruction class we get Envelope volume
     // from G4LogicalVolumeStore.
 
-    // G4double size = 5.0 * mm;
-
-    // if (!fEnvelopeBox)
-    //{
-    //   G4LogicalVolume *envLV = G4LogicalVolumeStore::GetInstance()->GetVolume("SampleCrystal");
-    //   if (envLV)
-    //     fEnvelopeBox = dynamic_cast<G4Box *>(envLV->GetSolid());
-    // }
-
-    // if (fEnvelopeBox)
-    //{
-    //   size = fEnvelopeBox->GetXHalfLength() * 2.;
-    // }
-    // else
-    //{
-    //   G4ExceptionDescription msg;
-    //   msg << "Envelope volume of box shape not found.\n";
-    //   msg << "Perhaps you have changed geometry.\n";
-    //   msg << "The gun will be place at the center.";
-    //   G4Exception("PrimaryGeneratorAction::GeneratePrimaries()",
-    //               "MyCode0002", JustWarning, msg);
-    // }
-
-    // G4double x0 = size * (G4UniformRand() - 0.5);
-    // G4double y0 = size * (G4UniformRand() - 0.5);
-    // G4double z0 = size * (G4UniformRand() - 0.5);
-
-    // fParticleGun->SetParticlePosition(G4ThreeVector(x0, y0, z0));
-
-    {
-      const G4double cosTheta = G4UniformRand();
-      const G4double sinTheta = sqrt(1.0 - cosTheta * cosTheta);
-      const G4double phi = G4UniformRand() * 8.0 * atan(1.0);
-      const G4double x = cos(phi) * sinTheta;
-      const G4double y = sin(phi) * sinTheta;
-      const G4double z = cosTheta;
-      fParticleGun->SetParticleMomentumDirection(G4ThreeVector(x, y, z));
-    }
+    G4ThreeVector direction;
+    double energy;
+    fProtonGenerator->SetParticle(direction, energy);
+    fParticleGun->SetParticleMomentumDirection(direction);
+    fParticleGun->SetParticleEnergy(energy);
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
 

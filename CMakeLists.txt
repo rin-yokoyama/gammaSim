@@ -37,6 +37,8 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #
 add_executable(exampleB1 exampleB1.cc ${sources} ${headers})
 target_link_libraries(exampleB1 ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+#add_executable(test src/test.cc ${sources} ${headers})
+#target_link_libraries(test ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
@@ -70,4 +72,4 @@ add_custom_target(B1 DEPENDS exampleB1)
 #----------------------------------------------------------------------------
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
-install(TARGETS exampleB1 DESTINATION bin)
+#install(TARGETS exampleB1 DESTINATION bin)
