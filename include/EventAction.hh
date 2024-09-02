@@ -31,6 +31,7 @@
 #define B1EventAction_h 1
 
 #include <vector>
+#include <memory>
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 #include "ExpConstants.hh"
@@ -46,17 +47,17 @@ namespace B1
   class EventAction : public G4UserEventAction
   {
   public:
-    EventAction(RunAction *runAction);
+    EventAction(std::shared_ptr<RunAction> runAction);
     ~EventAction() override = default;
 
     void BeginOfEventAction(const G4Event *event) override;
     void EndOfEventAction(const G4Event *event) override;
 
-    void AddSiEdep(G4double edep, G4int copy_num);
-    void AddCsIEdep(G4double edep, G4int copy_num);
+    void AddSiEdep(const G4double &eDep, G4int copyNum);
+    void AddCsIEdep(const G4double &eDep, G4int copyNum);
 
   private:
-    RunAction *fRunAction = nullptr;
+    std::shared_ptr<RunAction> runAction_;
   };
 
 }

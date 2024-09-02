@@ -40,7 +40,7 @@ namespace B1
 
   void ActionInitialization::BuildForMaster() const
   {
-    auto runAction = new RunAction(fTree, fSiDataVec, fCsIDataVec);
+    auto runAction = new RunAction(file_prefix_);
     SetUserAction(runAction);
   }
 
@@ -50,8 +50,8 @@ namespace B1
   {
     SetUserAction(new PrimaryGeneratorAction);
 
-    auto runAction = new RunAction(fTree, fSiDataVec, fCsIDataVec);
-    SetUserAction(runAction);
+    auto runAction = std::make_shared<RunAction>(file_prefix_);
+    SetUserAction(runAction.get());
 
     auto eventAction = new EventAction(runAction);
     SetUserAction(eventAction);

@@ -40,9 +40,6 @@
 
 #include "Randomize.hh"
 
-#include "TFile.h"
-#include "TTree.h"
-
 #include "ExpConstants.hh"
 
 using namespace B1;
@@ -69,10 +66,10 @@ int main(int argc, char **argv)
   // Construct the default run manager
   //
   auto *runManager =
-      G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
+      G4RunManagerFactory::CreateRunManager(G4RunManagerType::MT, 4);
 
   // #ifdef G4MULTITHREADED
-  runManager->SetNumberOfThreads(4);
+  runManager->SetNumberOfThreads(20);
   // #endif
   //  Set mandatory initialization classes
   //
@@ -85,17 +82,8 @@ int main(int argc, char **argv)
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
 
-  auto rootFile = new TFile("output.root", "recreate");
-  auto rootTree = new TTree("tree", "tree");
-
-  std::vector<G4double> edepVec(B1::kNSiStrips, 0.0);
-  const std::string brString = "siStrips[" + std::to_string(B1::kNSiStrips) + "]/D";
-  rootTree->Branch("siStrips", edepVec.data(), brString.c_str());
-
-  std::vector<G4double> edepCsIVec(4, 0.0);
-  rootTree->Branch("siStrips", edepVec.data(), "CsI[4]/D");
   // User action initialization
-  runManager->SetUserInitialization(new ActionInitialization(rootTree, &edepVec, &edepCsIVec));
+  runManager->SetUserInitialization(new ActionInitialization("output/eDep_worker"));
 
   // Initialize visualization
   //
@@ -128,9 +116,6 @@ int main(int argc, char **argv)
   // Free the store: user actions, physics_list and detector_description are
   // owned and deleted by the run manager, so they should not be deleted
   // in the main() program !
-
-  rootTree->Write();
-  rootFile->Close();
 
   delete visManager;
   delete runManager;

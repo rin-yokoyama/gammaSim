@@ -3,9 +3,6 @@
 cmake_minimum_required(VERSION 3.16...3.21)
 project(B1)
 
-find_package(ROOT REQUIRED COMPONENTS Core RIO Net Hist Tree)
-include(${ROOT_USE_FILE})
-
 #----------------------------------------------------------------------------
 # Find Geant4 package, activating all available UI and Vis drivers by default
 # You can set WITH_GEANT4_UIVIS to OFF via the command line or ccmake/cmake-gui
@@ -18,6 +15,8 @@ else()
   find_package(Geant4 REQUIRED)
 endif()
 
+find_package(Arrow)
+find_package(Parquet)
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
 # Setup include directory for this project
@@ -36,9 +35,7 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(exampleB1 exampleB1.cc ${sources} ${headers})
-target_link_libraries(exampleB1 ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
-#add_executable(test src/test.cc ${sources} ${headers})
-#target_link_libraries(test ${Geant4_LIBRARIES} ${ROOT_LIBRARIES})
+target_link_libraries(exampleB1 ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} arrow parquet)
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

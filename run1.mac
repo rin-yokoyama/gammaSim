@@ -26,4 +26,4 @@
 #/gun/particle beta
 #/gun/energy 0.1 MeV
 #
-/run/beamOn 1000
+/run/beamOn 100000

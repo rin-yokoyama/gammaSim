@@ -32,7 +32,6 @@
 
 #include "globals.hh"
 #include "G4VUserActionInitialization.hh"
-#include "TTree.h"
 
 /// Action initialization class.
 
@@ -44,15 +43,13 @@ namespace B1
   public:
     ActionInitialization() = default;
     ~ActionInitialization() override = default;
-    ActionInitialization(TTree *tree, std::vector<double> *si_data, std::vector<double> *csi_data) : fTree(tree), fSiDataVec(si_data), fCsIDataVec(csi_data) {}
+    ActionInitialization(const std::string &file_prefix) : file_prefix_(file_prefix) {}
 
     void BuildForMaster() const override;
     void Build() const override;
 
   private:
-    TTree *fTree;
-    std::vector<G4double> *fSiDataVec;
-    std::vector<G4double> *fCsIDataVec;
+    const std::string file_prefix_;
   };
 
 }

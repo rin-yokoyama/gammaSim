@@ -34,8 +34,10 @@
 #include "G4Accumulable.hh"
 #include "globals.hh"
 
-#include "TFile.h"
-#include "TTree.h"
+#include <map>
+#include <arrow/api.h>
+#include <arrow/io/api.h>
+#include <parquet/arrow/writer.h>
 
 #include "ExpConstants.hh"
 class G4Run;
@@ -52,20 +54,21 @@ namespace B1
   class RunAction : public G4UserRunAction
   {
   public:
-    RunAction(TTree *tree, std::vector<G4double> *si_data, std::vector<G4double> *csi_data);
+    RunAction(const std::string &file_prefix);
     ~RunAction() override = default;
 
     void BeginOfRunAction(const G4Run *) override;
     void EndOfRunAction(const G4Run *) override;
 
-    void FillTree();
-    std::vector<G4double> *GetSiDataVec() { return fSiDataVec; }
-    std::vector<G4double> *GetCsIDataVec() { return fCsIDataVec; }
+    void IncrementEvent() { ++n_worker_event_; }
+    void AddEdep(const std::string &detName, const G4double &eDep, G4int copyNum);
 
   private:
-    TTree *fTree = nullptr;
-    std::vector<G4double> *fSiDataVec;
-    std::vector<G4double> *fCsIDataVec;
+    const std::string file_prefix_;
+    u_int64_t n_worker_event_;
+    int worker_id_;
+    std::map<std::string, std::shared_ptr<arrow::ArrayBuilder>> builder_map_;
+    arrow::MemoryPool *pool_;
   };
 
 }

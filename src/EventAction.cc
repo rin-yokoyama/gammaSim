@@ -38,8 +38,8 @@ namespace B1
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  EventAction::EventAction(RunAction *runAction)
-      : fRunAction(runAction)
+  EventAction::EventAction(std::shared_ptr<RunAction> runAction)
+      : runAction_(runAction)
   {
   }
 
@@ -47,16 +47,6 @@ namespace B1
 
   void EventAction::BeginOfEventAction(const G4Event *)
   {
-    auto vec = *fRunAction->GetSiDataVec();
-    for (auto &data : vec)
-    {
-      data = 0.0;
-    }
-    auto vec2 = *fRunAction->GetCsIDataVec();
-    for (auto &data : vec2)
-    {
-      data = 0.0;
-    }
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -64,26 +54,18 @@ namespace B1
   void EventAction::EndOfEventAction(const G4Event *)
   {
     // accumulate statistics in run action
-    fRunAction->FillTree();
+    runAction_->IncrementEvent();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void EventAction::AddSiEdep(G4double edep, G4int copy_num)
+  void EventAction::AddSiEdep(const G4double &eDep, G4int copyNum)
   {
-    if (copy_num >= 0 && copy_num < B1::kNSiStrips)
-    {
-      auto &dataVec = *fRunAction->GetSiDataVec();
-      dataVec[copy_num] += edep;
-    }
+    runAction_->AddEdep("Si", eDep, copyNum);
   }
 
-  void EventAction::AddCsIEdep(G4double edep, G4int copy_num)
+  void EventAction::AddCsIEdep(const G4double &eDep, G4int copyNum)
   {
-    if (copy_num >= 0 && copy_num < 4)
-    {
-      auto &dataVec = *fRunAction->GetCsIDataVec();
-      dataVec[copy_num] += edep;
-    }
+    runAction_->AddEdep("CsI", eDep, copyNum);
   }
 }

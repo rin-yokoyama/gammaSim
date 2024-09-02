@@ -45,8 +45,9 @@ namespace B1
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  RunAction::RunAction(TTree *tree, std::vector<G4double> *si_data, std::vector<G4double> *csi_data) : fTree(tree), fSiDataVec(si_data), fCsIDataVec(csi_data)
+  RunAction::RunAction(const std::string &file_prefix) : file_prefix_(file_prefix)
   {
+    pool_ = arrow::default_memory_pool();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -55,6 +56,17 @@ namespace B1
   {
     // inform the runManager to save random number seed
     G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+
+    // Initialize Array builders
+    builder_map_.clear();
+    builder_map_["workerId"] = std::make_shared<arrow::Int32Builder>(pool_);
+    builder_map_["eventId"] = std::make_shared<arrow::Int32Builder>(pool_);
+    builder_map_["detName"] = std::make_shared<arrow::StringBuilder>(pool_);
+    builder_map_["copyId"] = std::make_shared<arrow::Int32Builder>(pool_);
+    builder_map_["eDep"] = std::make_shared<arrow::DoubleBuilder>(pool_);
+
+    worker_id_ = G4Threading::G4GetThreadId();
+    n_worker_event_ = 0;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -64,6 +76,36 @@ namespace B1
     G4int nofEvents = run->GetNumberOfEvent();
     if (nofEvents == 0)
       return;
+
+    // Finalize arrays
+    std::vector<std::string> cols = {"workerId", "eventId", "detName", "copyId", "eDep"};
+    arrow::ArrayVector arrayVec;
+    for (const auto &col : cols)
+    {
+      std::shared_ptr<arrow::Array> array;
+      PARQUET_THROW_NOT_OK(builder_map_[col]->Finish(&array));
+      arrayVec.emplace_back(array);
+    }
+
+    // Create schema
+    arrow::FieldVector fieldVec;
+    fieldVec.emplace_back(std::make_shared<arrow::Field>("workerId", arrow::int32()));
+    fieldVec.emplace_back(std::make_shared<arrow::Field>("eventId", arrow::int32()));
+    fieldVec.emplace_back(std::make_shared<arrow::Field>("detName", arrow::utf8()));
+    fieldVec.emplace_back(std::make_shared<arrow::Field>("copyId", arrow::int32()));
+    fieldVec.emplace_back(std::make_shared<arrow::Field>("eDep", arrow::float64()));
+    auto schema = arrow::schema(fieldVec);
+
+    // Write table to file
+    G4int threadId = G4Threading::G4GetThreadId();
+    std::string filename = file_prefix_ + std::to_string(threadId) + ".parquet";
+    auto table = arrow::Table::Make(schema, arrayVec);
+    std::shared_ptr<arrow::io::FileOutputStream> outfile;
+    PARQUET_ASSIGN_OR_THROW(
+        outfile,
+        arrow::io::FileOutputStream::Open(filename));
+
+    PARQUET_THROW_NOT_OK(parquet::arrow::WriteTable(*table, pool_, outfile));
 
     // Run conditions
     //  note: There is no primary generator action object for "master"
@@ -100,14 +142,15 @@ namespace B1
         << " The run consists of " << nofEvents << " " << runCondition
         << G4endl;
   }
-
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void RunAction::FillTree()
+  void RunAction::AddEdep(const std::string &detName, const G4double &eDep, G4int copyNum)
   {
-    fTree->Fill();
+    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["workerId"].get())->Append(worker_id_));
+    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["eventId"].get())->Append(n_worker_event_));
+    PARQUET_THROW_NOT_OK(static_cast<arrow::StringBuilder *>(builder_map_["detName"].get())->Append(detName));
+    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["copyNum"].get())->Append(copyNum));
+    PARQUET_THROW_NOT_OK(static_cast<arrow::DoubleBuilder *>(builder_map_["eDep"].get())->Append(eDep));
   }
-
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 }
