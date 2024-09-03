@@ -33,6 +33,7 @@
 #include "G4Event.hh"
 #include "G4RunManager.hh"
 
+#include "InitParticleEventInfo.hh"
 namespace B1
 {
 
@@ -47,13 +48,26 @@ namespace B1
 
   void EventAction::BeginOfEventAction(const G4Event *)
   {
+    SiMap_.clear();
+    CsIMap_.clear();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void EventAction::EndOfEventAction(const G4Event *)
+  void EventAction::EndOfEventAction(const G4Event *anEvent)
   {
-    // accumulate statistics in run action
+    auto info = (InitParticleEventInfo *)anEvent->GetUserInformation();
+    runAction_->AddEventInfo(info->GetProtonEnergy(), info->GetThetaLab(), info->GetPhiLab());
+    for (const auto &si : SiMap_)
+    {
+      runAction_->AddEdep("Si", si.second, si.first);
+    }
+    for (const auto &csi : CsIMap_)
+    {
+      runAction_->AddEdep("CsI", csi.second, csi.first);
+    }
+    // delete info;
+    //  accumulate statistics in run action
     runAction_->IncrementEvent();
   }
 
@@ -61,11 +75,11 @@ namespace B1
 
   void EventAction::AddSiEdep(const G4double &eDep, G4int copyNum)
   {
-    runAction_->AddEdep("Si", eDep, copyNum);
+    SiMap_[copyNum] = SiMap_[copyNum] + eDep;
   }
 
   void EventAction::AddCsIEdep(const G4double &eDep, G4int copyNum)
   {
-    runAction_->AddEdep("CsI", eDep, copyNum);
+    CsIMap_[copyNum] = CsIMap_[copyNum] + eDep;
   }
 }

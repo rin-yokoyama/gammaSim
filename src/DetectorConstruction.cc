@@ -40,6 +40,8 @@
 #include "G4PVPlacement.hh"
 #include "G4SystemOfUnits.hh"
 #include "ExpConstants.hh"
+#include "G4Material.hh"
+#include "G4VisAttributes.hh"
 
 namespace B1
 {
@@ -61,6 +63,7 @@ namespace B1
     G4double world_sizeXY = B1::kWorldSize;
     G4double world_sizeZ = B1::kWorldSize;
     G4Material *world_mat = nist->FindOrBuildMaterial("G4_AIR");
+    G4Material *det_mat = nist->FindOrBuildMaterial("G4_Galactic");
 
     auto solidWorld = new G4Box("World",                                                    // its name
                                 0.5 * world_sizeXY, 0.5 * world_sizeXY, 0.5 * world_sizeZ); // its size
@@ -77,6 +80,13 @@ namespace B1
                                        false,           // no boolean operation
                                        0,               // copy number
                                        checkOverlaps);  // overlaps checking
+
+    auto solidDet = new G4Box("Detector",                                                 // its name
+                              0.1 * world_sizeXY, 0.1 * world_sizeXY, 0.1 * world_sizeZ); // its size
+    auto logicDet = new G4LogicalVolume(solidDet, det_mat, "detectorMother");
+    G4VisAttributes *invisibleAttributes = new G4VisAttributes();
+    invisibleAttributes->SetVisibility(false);
+    logicDet->SetVisAttributes(invisibleAttributes);
 
     G4Material *gps = nullptr;
     {
@@ -114,7 +124,7 @@ namespace B1
                           vec,            // at position
                           siStripLogic,   // its logical volume
                           "SiStrip",      // its name
-                          logicWorld,     // its mother  volume
+                          logicDet,       // its mother  volume
                           false,          // no boolean operation
                           i_strip,        // copy number
                           checkOverlaps); // overlaps checking
@@ -143,7 +153,7 @@ namespace B1
                           vec,            // at position
                           CsILogic,       // its logical volume
                           "CsI",          // its name
-                          logicWorld,     // its mother  volume
+                          logicDet,       // its mother  volume
                           false,          // no boolean operation
                           i_crystal,      // copy number
                           checkOverlaps); // overlaps checking
@@ -153,6 +163,8 @@ namespace B1
     //
     // always return the physical World
     //
+    new G4PVPlacement(&B1::kRotation, B1::kPosition, logicDet, "detector", logicWorld, false, 0);
+
     return physWorld;
   }
 

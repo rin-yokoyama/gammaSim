@@ -38,6 +38,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
+#include "InitParticleEventInfo.hh"
 
 namespace B1
 {
@@ -57,7 +58,7 @@ namespace B1
 
     fProtonGenerator = new ProtonGenerator;
     fProtonGenerator->Clear();
-    fProtonGenerator->ReadFile("work/Ce148pp_2_lab.out");
+    fProtonGenerator->ReadFile("work/generated_data_3n.csv");
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -81,6 +82,7 @@ namespace B1
     G4ThreeVector direction;
     double energy;
     fProtonGenerator->SetParticle(direction, energy);
+    anEvent->SetUserInformation(new InitParticleEventInfo(energy, direction.getTheta(), direction.getPhi()));
     fParticleGun->SetParticleMomentumDirection(direction);
     fParticleGun->SetParticleEnergy(energy);
     fParticleGun->GeneratePrimaryVertex(anEvent);

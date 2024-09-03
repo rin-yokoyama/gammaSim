@@ -3,6 +3,7 @@
 #include <sstream>
 #include <numeric>
 #include <math.h>
+#include "ExpConstants.hh"
 
 ProtonGenerator::ProtonGenerator() : itr_(0)
 {
@@ -29,11 +30,24 @@ int ProtonGenerator::ReadFile(std::string fname)
     while (std::getline(fin, line))
     {
         std::istringstream iss(line);
-        iss >> deg_lab >> en_p >> phi;
+
+        std::string deg_lab_str;
+        std::getline(iss, deg_lab_str, ',');
+        deg_lab = std::atof(deg_lab_str.c_str());
+
+        std::string en_p_str;
+        std::getline(iss, en_p_str, ',');
+        en_p = std::atof(en_p_str.c_str());
+
+        std::string phi_str;
+        std::getline(iss, phi_str);
+        phi = std::atof(phi_str.c_str());
+
         deg_lab_.emplace_back(deg_lab);
         en_p_.emplace_back(en_p);
         phi_.emplace_back(phi);
     }
+    fin.close();
     return 0;
 }
 
@@ -47,6 +61,13 @@ void ProtonGenerator::Clear()
 
 void ProtonGenerator::SetParticle(G4ThreeVector &vec, double &energy)
 {
+    if (itr_ >= en_p_.size())
+        itr_ = 0;
+    if (B1::kLimitTo2Pi)
+    {
+        if (phi_[itr_] > M_PI)
+            phi_[itr_] = phi_[itr_] - M_PI;
+    }
     vec.setRThetaPhi(1, M_PI * deg_lab_[itr_] / 180., phi_[itr_]);
     energy = en_p_[itr_];
     ++itr_;

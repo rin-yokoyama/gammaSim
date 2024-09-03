@@ -57,6 +57,8 @@ namespace B1
     void AddCsIEdep(const G4double &eDep, G4int copyNum);
 
   private:
+    std::map<int, double> SiMap_;
+    std::map<int, double> CsIMap_;
     std::shared_ptr<RunAction> runAction_;
   };
 

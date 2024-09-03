@@ -41,6 +41,7 @@
 #include "Randomize.hh"
 
 #include "ExpConstants.hh"
+#include "ProtonGenerator.hh"
 
 using namespace B1;
 
@@ -55,7 +56,6 @@ int main(int argc, char **argv)
   {
     ui = new G4UIExecutive(argc, argv);
   }
-
   // Optionally: choose a different Random engine...
   // G4Random::setTheEngine(new CLHEP::MTwistEngine);
 
@@ -66,10 +66,10 @@ int main(int argc, char **argv)
   // Construct the default run manager
   //
   auto *runManager =
-      G4RunManagerFactory::CreateRunManager(G4RunManagerType::MT, 4);
+      G4RunManagerFactory::CreateRunManager(G4RunManagerType::MT, 1);
 
   // #ifdef G4MULTITHREADED
-  runManager->SetNumberOfThreads(20);
+  // runManager->SetNumberOfThreads(1);
   // #endif
   //  Set mandatory initialization classes
   //
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   runManager->SetUserInitialization(physicsList);
 
   // User action initialization
-  runManager->SetUserInitialization(new ActionInitialization("output/eDep_worker"));
+  runManager->SetUserInitialization(new ActionInitialization("work/output"));
 
   // Initialize visualization
   //
@@ -100,6 +100,7 @@ int main(int argc, char **argv)
   if (!ui)
   {
     // batch mode
+    UImanager->ApplyCommand("/control/macroPath /home/sh22/simulation/octupole");
     G4String command = "/control/execute ";
     G4String fileName = argv[1];
     UImanager->ApplyCommand(command + fileName);
