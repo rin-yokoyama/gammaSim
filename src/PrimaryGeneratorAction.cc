@@ -80,11 +80,13 @@ namespace B1
     // from G4LogicalVolumeStore.
 
     G4ThreeVector direction;
+    G4ThreeVector position;
     double energy;
-    fProtonGenerator->SetParticle(direction, energy);
+    fProtonGenerator->SetParticle(direction, energy, position);
     anEvent->SetUserInformation(new InitParticleEventInfo(energy, direction.getTheta(), direction.getPhi()));
     fParticleGun->SetParticleMomentumDirection(direction);
     fParticleGun->SetParticleEnergy(energy);
+    fParticleGun->SetParticlePosition(position);
     fParticleGun->GeneratePrimaryVertex(anEvent);
   }
 

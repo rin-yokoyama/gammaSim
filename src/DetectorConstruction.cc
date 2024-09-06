@@ -34,6 +34,7 @@
 #include "G4Box.hh"
 #include "G4Cons.hh"
 #include "G4Orb.hh"
+#include "G4Tubs.hh"
 #include "G4Sphere.hh"
 #include "G4Trd.hh"
 #include "G4LogicalVolume.hh"
@@ -101,6 +102,14 @@ namespace B1
       gps->AddElement(elemO, 5);
     }
 
+    /// Target
+    G4Material *target_mat = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
+    auto tubs = new G4Tubs("Target", 0, B1::kTargetRadius, B1::kTargetThickness * 0.5, 2 * M_PI, 2 * M_PI);
+    auto logicTarget = new G4LogicalVolume(tubs, target_mat, "Target");
+    G4ThreeVector target_pos;
+    new G4PVPlacement(nullptr, target_pos, logicTarget, "target", logicWorld, false, 0, checkOverlaps);
+
+    /// Si strips
     G4Material *si_mat = nist->FindOrBuildMaterial("G4_Si");
 
     const G4double si_strip_width = B1::kSiSize / B1::kNSiStrips;
@@ -135,6 +144,7 @@ namespace B1
     //
     fScoringVolume = siStripLogic;
 
+    /// CsI
     auto CsISolid = new G4Box("CsI", 0.5 * B1::kCsISize, 0.5 * B1::kCsISize, 0.5 * B1::kCsIThickness);
     auto CsILogic = new G4LogicalVolume(CsISolid, // its solid
                                         gps,      // its material
