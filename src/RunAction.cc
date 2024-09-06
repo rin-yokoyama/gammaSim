@@ -56,6 +56,9 @@ namespace B1
   {
     // inform the runManager to save random number seed
     G4RunManager::GetRunManager()->SetRandomNumberStore(false);
+    const u_int64_t nevent = G4RunManager::GetRunManager()->GetNumberOfEventsToBeProcessed();
+    const int nworkers = G4RunManager::GetRunManager()->GetNumberOfThreads();
+    const u_int64_t nevnet_per_worker = nevent / nworkers;
 
     // Initialize Array builders
     builder_map_.clear();
@@ -72,7 +75,7 @@ namespace B1
     event_info_builder_map_["phi"] = std::make_shared<arrow::DoubleBuilder>(pool_);
 
     worker_id_ = G4Threading::G4GetThreadId();
-    n_worker_event_ = 0;
+    n_worker_event_ = worker_id_ * nevnet_per_worker;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -58,7 +58,7 @@ namespace B1
 
     fProtonGenerator = new ProtonGenerator;
     fProtonGenerator->Clear();
-    fProtonGenerator->ReadFile("work/generated_data_3n.csv");
+    fProtonGenerator->ReadFile("work/generated_data_2p.csv");
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

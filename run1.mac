@@ -4,7 +4,7 @@
 # or interactively: Idle> /control/execute run1.mac
 #
 # Change the default number of workers (in multi-threading mode) 
-/run/numberOfThreads 1
+/run/numberOfThreads 20
 #
 # Initialize kernel
 /run/initialize
