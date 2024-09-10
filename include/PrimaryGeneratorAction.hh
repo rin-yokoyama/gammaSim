@@ -33,7 +33,8 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "globals.hh"
-#include "ProtonGenerator.hh"
+#include "GammaGenerator.hh"
+#include <memory>
 
 class G4ParticleGun;
 class G4Event;
@@ -62,7 +63,7 @@ namespace B1
   private:
     G4ParticleGun *fParticleGun = nullptr; // pointer a to G4 gun class
     G4Box *fEnvelopeBox = nullptr;
-    ProtonGenerator *fProtonGenerator = nullptr;
+    std::unique_ptr<GammaGenerator> fGammaGenerator;
   };
 
 }

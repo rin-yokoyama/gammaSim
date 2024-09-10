@@ -82,6 +82,7 @@ namespace B1
                                        0,               // copy number
                                        checkOverlaps);  // overlaps checking
 
+    // Mother logical volume for detector geometry
     auto solidDet = new G4Box("Detector",                                                 // its name
                               0.1 * world_sizeXY, 0.1 * world_sizeXY, 0.1 * world_sizeZ); // its size
     auto logicDet = new G4LogicalVolume(solidDet, det_mat, "detectorMother");
@@ -89,92 +90,88 @@ namespace B1
     invisibleAttributes->SetVisibility(false);
     logicDet->SetVisAttributes(invisibleAttributes);
 
-    G4Material *gps = nullptr;
+    // Mother logical volume for sample geometry
+    auto solidSample = new G4Box("Sample",                                                   // its name
+                                 0.1 * world_sizeXY, 0.1 * world_sizeXY, 0.1 * world_sizeZ); // its size
+    auto logicSample = new G4LogicalVolume(solidSample, det_mat, "sampleMother");
+    logicSample->SetVisAttributes(invisibleAttributes);
+
+    if (!B1::kUseSource)
     {
-      const int ncomp = 3;
-      const G4double density = 5.3 * g / cm3;
-      gps = new G4Material("LaGPS", density, ncomp);
-      auto elemGd = new G4Element("Gadolinium", "Gd", 64., 157.25 * g / mole);
-      auto elemSi = new G4Element("Silicon", "Si", 14., 28.0 * g / mole);
-      auto elemO = new G4Element("Gadolinium", "Gd", 8., 16.00 * g / mole);
-      gps->AddElement(elemGd, 2);
-      gps->AddElement(elemSi, 2);
-      gps->AddElement(elemO, 5);
-    }
-
-    /// Target
-    G4Material *target_mat = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
-    auto tubs = new G4Tubs("Target", 0, B1::kTargetRadius, B1::kTargetThickness * 0.5, 2 * M_PI, 2 * M_PI);
-    auto logicTarget = new G4LogicalVolume(tubs, target_mat, "Target");
-    G4ThreeVector target_pos;
-    new G4PVPlacement(nullptr, target_pos, logicTarget, "target", logicWorld, false, 0, checkOverlaps);
-
-    /// Si strips
-    G4Material *si_mat = nist->FindOrBuildMaterial("G4_Si");
-
-    const G4double si_strip_width = B1::kSiSize / B1::kNSiStrips;
-    std::vector<G4ThreeVector> pos_vec;
-    for (int i = 0; i < B1::kNSiStrips; ++i)
-    {
-      pos_vec.emplace_back(G4ThreeVector(B1::kSiXOffset, B1::kSiYOffset + si_strip_width * i, B1::kSiZOffset));
-    }
-
-    auto siStripSolid = new G4Box("Strip", 0.5 * B1::kSiSize, 0.5 * si_strip_width, 0.5 * B1::kSiThickness);
-
-    auto siStripLogic = new G4LogicalVolume(siStripSolid, // its solid
-                                            si_mat,       // its material
-                                            "SiStrip");   // its name
-
-    {
-      G4int i_strip = 0;
-      for (const auto &vec : pos_vec)
+      // La-GPS
+      G4Material *gps = nullptr;
       {
-        new G4PVPlacement(nullptr,        // no rotation
-                          vec,            // at position
-                          siStripLogic,   // its logical volume
-                          "SiStrip",      // its name
-                          logicDet,       // its mother  volume
-                          false,          // no boolean operation
-                          i_strip,        // copy number
-                          checkOverlaps); // overlaps checking
-        ++i_strip;
+        const int ncomp = 3;
+        const G4double density = 5.3 * g / cm3;
+        gps = new G4Material("LaGPS", density, ncomp);
+        auto elemGd = new G4Element("Gadolinium", "Gd", 64., 157.25 * g / mole);
+        auto elemSi = new G4Element("Silicon", "Si", 14., 28.0 * g / mole);
+        auto elemO = new G4Element("Oxygen", "O", 8., 16.00 * g / mole);
+        gps->AddElement(elemGd, 2);
+        gps->AddElement(elemSi, 2);
+        gps->AddElement(elemO, 5);
       }
+      auto boxArray = new G4Box("Array", B1::kArraySizeX / 2., B1::kArraySizeY / 2., B1::kArraySizeZ / 2.);
+      auto logicArray = new G4LogicalVolume(boxArray, gps, "Array");
+      G4ThreeVector array_pos(0, B1::kArraySizeY / 2., 0);
+      new G4PVPlacement(nullptr, array_pos, logicArray, "array", logicSample, false, 0, checkOverlaps);
+    }
+    else
+    {
+      /// Source
+      G4Material *source_mat = nist->FindOrBuildMaterial("G4_POLYETHYLENE");
+      auto boxSource = new G4Box("Source", B1::kSourceSizeX / 2., B1::kSourceSizeY / 2., B1::kSourceSizeZ / 2.);
+      auto logicSource = new G4LogicalVolume(boxSource, source_mat, "Source");
+      G4ThreeVector source_pos(0, B1::kSourceSizeY / 2., 0);
+      new G4PVPlacement(nullptr, source_pos, logicSource, "source", logicSample, false, 0, checkOverlaps);
+    }
+
+    /// Ge crystal
+    G4Material *ge_mat = nist->FindOrBuildMaterial("G4_Ge");
+
+    auto geTube = new G4Tubs("Ge", 0, B1::kGeRadius, B1::kGeLength / 2., 2 * M_PI, 2 * M_PI);
+
+    auto geLogic = new G4LogicalVolume(geTube, // its solid
+                                       ge_mat, // its material
+                                       "Ge");  // its name
+
+    G4VisAttributes *detVisAttributes = new G4VisAttributes();
+    detVisAttributes->SetColor(0, 1, 1, 0.8);
+    geLogic->SetVisAttributes(detVisAttributes);
+
+    {
+      // Place Ge in the detector mother volume
+      new G4PVPlacement(nullptr,                // no rotation
+                        G4ThreeVector(0, 0, 0), // at position
+                        geLogic,                // its logical volume
+                        "Ge",                   // its name
+                        logicDet,               // its mother  volume
+                        false,                  // no boolean operation
+                        0,                      // copy number
+                        checkOverlaps);         // overlaps checking
     }
     // Set siStip as scoring volume
     //
-    fScoringVolume = siStripLogic;
+    fScoringVolume = geLogic;
 
-    /// CsI
-    auto CsISolid = new G4Box("CsI", 0.5 * B1::kCsISize, 0.5 * B1::kCsISize, 0.5 * B1::kCsIThickness);
-    auto CsILogic = new G4LogicalVolume(CsISolid, // its solid
-                                        gps,      // its material
-                                        "CsI");   // its name
-    std::vector<G4ThreeVector> CsIPosVec;
-    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset + 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize + 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
-    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset - 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize + 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
-    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset + 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize - 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
-    CsIPosVec.emplace_back(G4ThreeVector(B1::kSiXOffset - 0.5 * B1::kCsISize, B1::kSiYOffset + 0.5 * B1::kSiSize - 0.5 * B1::kCsISize, B1::kSiZOffset + 0.5 * B1::kCsIThickness + B1::kCsIZOffset));
+    /// Ge window
+    auto window_mat = nist->FindOrBuildMaterial("G4_Mg");
+    auto windowTube = new G4Tubs("Window", 0, B1::kGeRadius * 1.1, B1::kWindowThickness, 2 * M_PI, 2 * M_PI);
+    auto windowLogic = new G4LogicalVolume(windowTube, window_mat, "Window");
+    new G4PVPlacement(nullptr, B1::kWindowPos, windowLogic, "window", logicDet, false, 0);
+    G4VisAttributes *windowVisAttributes = new G4VisAttributes();
+    windowVisAttributes->SetColor(1, 1, 0, 0.8);
+    windowLogic->SetVisAttributes(windowVisAttributes);
 
-    {
-      G4int i_crystal = 0;
-      for (const auto &vec : CsIPosVec)
-      {
-        new G4PVPlacement(nullptr,        // no rotation
-                          vec,            // at position
-                          CsILogic,       // its logical volume
-                          "CsI",          // its name
-                          logicDet,       // its mother  volume
-                          false,          // no boolean operation
-                          i_crystal,      // copy number
-                          checkOverlaps); // overlaps checking
-        ++i_crystal;
-      }
-    }
+    // Place the detector mother volume in the world volume
+    new G4PVPlacement(&B1::kDetRotation, B1::kDetPosition, logicDet, "detector", logicWorld, false, 0);
+
+    // Place the sample mother volume in the world volume
+    new G4PVPlacement(&B1::kSampleRotation, B1::kSamplePosition, logicSample, "sample", logicWorld, false, 0);
+
     //
     // always return the physical World
     //
-    new G4PVPlacement(&B1::kRotation, B1::kPosition, logicDet, "detector", logicWorld, false, 0);
-
     return physWorld;
   }
 

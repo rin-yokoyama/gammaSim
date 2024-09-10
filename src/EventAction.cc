@@ -48,8 +48,7 @@ namespace B1
 
   void EventAction::BeginOfEventAction(const G4Event *)
   {
-    SiMap_.clear();
-    CsIMap_.clear();
+    GeMap_.clear();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -57,14 +56,16 @@ namespace B1
   void EventAction::EndOfEventAction(const G4Event *anEvent)
   {
     auto info = (InitParticleEventInfo *)anEvent->GetUserInformation();
-    runAction_->AddEventInfo(info->GetProtonEnergy(), info->GetThetaLab(), info->GetPhiLab());
-    for (const auto &si : SiMap_)
+    int i = 0;
+    for (const auto &en : info->GetGammaEnergy())
     {
-      runAction_->AddEdep("Si", si.second, si.first);
+      auto dir = info->GetDirections().at(i);
+      auto pos = info->GetPositions().at(i);
+      runAction_->AddEventInfo(en, dir.getTheta(), dir.getPhi(), pos);
     }
-    for (const auto &csi : CsIMap_)
+    for (const auto &ge : GeMap_)
     {
-      runAction_->AddEdep("CsI", csi.second, csi.first);
+      runAction_->AddEdep("Ge", ge.second, ge.first);
     }
     // delete info;
     //  accumulate statistics in run action
@@ -73,13 +74,9 @@ namespace B1
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-  void EventAction::AddSiEdep(const G4double &eDep, G4int copyNum)
+  void EventAction::AddGeEdep(const G4double &eDep, G4int copyNum)
   {
-    SiMap_[copyNum] = SiMap_[copyNum] + eDep;
+    GeMap_[copyNum] = GeMap_[copyNum] + eDep;
   }
 
-  void EventAction::AddCsIEdep(const G4double &eDep, G4int copyNum)
-  {
-    CsIMap_[copyNum] = CsIMap_[copyNum] + eDep;
-  }
 }

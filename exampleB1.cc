@@ -33,7 +33,6 @@
 #include "G4RunManagerFactory.hh"
 #include "G4SteppingVerbose.hh"
 #include "G4UImanager.hh"
-#include "QBBC.hh"
 
 #include "G4VisExecutive.hh"
 #include "G4UIExecutive.hh"
@@ -41,7 +40,9 @@
 #include "Randomize.hh"
 
 #include "ExpConstants.hh"
-#include "ProtonGenerator.hh"
+#include "GammaGenerator.hh"
+#include "LinuxDirectoryFunctions.hh"
+#include "GammaPhysicsList.hh"
 
 using namespace B1;
 
@@ -51,10 +52,20 @@ int main(int argc, char **argv)
 {
   // Detect interactive mode (if no arguments) and define UI session
   //
+  std::string outFileName = "";
   G4UIExecutive *ui = nullptr;
   if (argc == 1)
   {
     ui = new G4UIExecutive(argc, argv);
+  }
+  else if (argc == 2)
+  {
+    std::cout << "Usage: exampleB1 run.mac [output_dir]" << std::endl;
+    return 1;
+  }
+  else
+  {
+    outFileName = argv[2];
   }
   // Optionally: choose a different Random engine...
   // G4Random::setTheEngine(new CLHEP::MTwistEngine);
@@ -77,13 +88,12 @@ int main(int argc, char **argv)
   runManager->SetUserInitialization(new DetectorConstruction());
 
   // Physics list
-  G4VModularPhysicsList *physicsList = new QBBC;
-  // G4VModularPhysicsList *physicsList = new LHEP;
+  G4VModularPhysicsList *physicsList = new GammaPhysicsList();
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
 
   // User action initialization
-  runManager->SetUserInitialization(new ActionInitialization("work/output"));
+  runManager->SetUserInitialization(new ActionInitialization(outFileName));
 
   // Initialize visualization
   //
@@ -100,10 +110,16 @@ int main(int argc, char **argv)
   if (!ui)
   {
     // batch mode
-    UImanager->ApplyCommand("/control/macroPath /home/sh22/simulation/octupole");
+    UImanager->ApplyCommand("/control/macroPath ./");
     G4String command = "/control/execute ";
-    G4String fileName = argv[1];
-    UImanager->ApplyCommand(command + fileName);
+    std::string macFileName = argv[1];
+    if (!createOrCleanDirectory(outFileName))
+      return 1;
+    if (!createOrCleanDirectory(outFileName + "/detectorData"))
+      return 1;
+    if (!createOrCleanDirectory(outFileName + "/particleData"))
+      return 1;
+    UImanager->ApplyCommand(command + macFileName);
   }
   else
   {

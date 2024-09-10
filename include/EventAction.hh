@@ -53,12 +53,10 @@ namespace B1
     void BeginOfEventAction(const G4Event *event) override;
     void EndOfEventAction(const G4Event *event) override;
 
-    void AddSiEdep(const G4double &eDep, G4int copyNum);
-    void AddCsIEdep(const G4double &eDep, G4int copyNum);
+    void AddGeEdep(const G4double &eDep, G4int copyNum);
 
   private:
-    std::map<int, double> SiMap_;
-    std::map<int, double> CsIMap_;
+    std::map<int, double> GeMap_;
     std::shared_ptr<RunAction> runAction_;
   };
 

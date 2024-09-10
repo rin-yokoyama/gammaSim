@@ -1,25 +1,37 @@
-#include "G4VUserEventInformation.hh"
+#ifndef __INIT_PARTICLE_EVENT_INFO_HH__
+#define __INIT_PARTICLE_EVENT_INFO_HH__
 
+#include "G4VUserEventInformation.hh"
+#include "G4ThreeVector.hh"
+#include <vector>
 class InitParticleEventInfo : public G4VUserEventInformation
 {
 public:
-    InitParticleEventInfo(double e, double t, double p) : eProton_(e), thetaLab_(t), phiLab_(p) {};
+    InitParticleEventInfo() : eGammas_(), directions_(), positions_() {};
     ~InitParticleEventInfo() {};
 
-    void SetData(double energy, double theta, double phi)
+    void AppendData(const double &e, const G4ThreeVector &dir, const G4ThreeVector &pos)
     {
-        eProton_ = energy;
-        thetaLab_ = theta;
-        phiLab_ = phi;
+        eGammas_.emplace_back(e);
+        directions_.emplace_back(dir);
+        positions_.emplace_back(pos);
     }
-    double GetProtonEnergy() const { return eProton_; }
-    double GetThetaLab() const { return thetaLab_; }
-    double GetPhiLab() const { return phiLab_; }
+    std::vector<double> GetGammaEnergy() const { return eGammas_; }
+    std::vector<G4ThreeVector> GetDirections() const { return directions_; }
+    std::vector<G4ThreeVector> GetPositions() const { return positions_; }
+    void Clear()
+    {
+        eGammas_.clear();
+        directions_.clear();
+        positions_.clear();
+    }
 
     void Print() const override {};
 
 private:
-    double eProton_;
-    double thetaLab_;
-    double phiLab_;
+    std::vector<double> eGammas_;
+    std::vector<G4ThreeVector> directions_;
+    std::vector<G4ThreeVector> positions_;
 };
+
+#endif

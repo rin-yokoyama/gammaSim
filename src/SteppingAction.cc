@@ -68,13 +68,9 @@ namespace B1
     G4double edepStep = step->GetTotalEnergyDeposit();
     G4int copyNum = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetCopyNo();
 
-    if (volume->GetName() == "SiStrip")
+    if (volume->GetName() == "Ge")
     {
-      fEventAction->AddSiEdep(edepStep, copyNum);
-    }
-    else if (volume->GetName() == "CsI")
-    {
-      fEventAction->AddCsIEdep(edepStep, copyNum);
+      fEventAction->AddGeEdep(edepStep, copyNum);
     }
   }
 

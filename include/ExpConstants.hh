@@ -7,24 +7,21 @@
 namespace B1
 {
     const G4double kWorldSize = 200. * cm;
-    const G4int kNSiStrips = 128;
-    const G4double kSiSize = 10. * cm;
-    const G4double kSiThickness = 0.3 * mm;
-    const G4double kSiXOffset = 0.0 * cm;
-    const G4double kSiYOffset = 1.0 * cm;
-    const G4double kSiZOffset = 5.0 * cm;
-    const G4double kCsISize = 5.0 * cm;
-    const G4double kCsIThickness = 2.0 * cm;
-    const G4double kCsIZOffset = 1.0 * mm;
-    const G4double kTargetThickness = 0.05 * mm;
-    const G4double kTargetRadius = 3 * cm;
-    static G4RotationMatrix kRotation(0, -90 * deg, 0);
-    static G4ThreeVector kPosition(0, 1. * cm, 11.5 * cm);
-    // static G4RotationMatrix kRotation(0, -60 * deg, 0);
-    // static G4ThreeVector kPosition(0, (1) * cm, (11.5 - 3.66) * cm);
-    // static G4RotationMatrix kRotation(0, -45 * deg, 0);
-    // static G4ThreeVector kPosition(0, (1) * cm, (9 - 4.14) * cm);
-    const bool kLimitTo2Pi = true;
+    const G4double kGeRadius = 57.1 * mm;
+    const G4double kGeLength = 54.6 * mm;
+    const G4double kWindowThickness = 1.5 * mm;
+    static G4ThreeVector kWindowPos(0, 0, B1::kGeLength / 2.0 + 3.0 * mm);
+    const G4bool kUseSource = true; // otherwise array
+    const G4double kSourceSizeX = 23.5 * mm;
+    const G4double kSourceSizeY = 2.1 * mm;
+    const G4double kSourceSizeZ = 11.3 * mm;
+    const G4double kArraySizeX = 50.0 * mm;
+    const G4double kArraySizeY = 2.5 * mm;
+    const G4double kArraySizeZ = 50.0 * mm;
+    static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
+    static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness), 0);
+    static G4RotationMatrix kSampleRotation(0, 0, 0);
+    static G4ThreeVector kSamplePosition(0, 0, 0);
 }
 
 #endif

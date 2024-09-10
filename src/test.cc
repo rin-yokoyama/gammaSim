@@ -1,9 +1,9 @@
 #include <iostream>
-#include "ProtonGenerator.hh"
+#include "GammaGenerator.hh"
 
 // int main(int argc, char **argv)
 //{
-//     ProtonGenerator g;
+//     GammaGenerator g;
 //     g.Clear();
 //     g.ReadFile("../work/Ce148pp_2_lab.out");
 //     for (int i = 0; i < 100; ++i)

@@ -47,7 +47,6 @@ namespace B1
 
   RunAction::RunAction(const std::string &file_prefix) : file_prefix_(file_prefix)
   {
-    pool_ = arrow::default_memory_pool();
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -61,21 +60,10 @@ namespace B1
     const u_int64_t nevnet_per_worker = nevent / nworkers;
 
     // Initialize Array builders
-    builder_map_.clear();
-    builder_map_["workerId"] = std::make_shared<arrow::Int32Builder>(pool_);
-    builder_map_["eventId"] = std::make_shared<arrow::Int32Builder>(pool_);
-    builder_map_["detName"] = std::make_shared<arrow::StringBuilder>(pool_);
-    builder_map_["copyId"] = std::make_shared<arrow::Int32Builder>(pool_);
-    builder_map_["eDep"] = std::make_shared<arrow::DoubleBuilder>(pool_);
-
-    event_info_builder_map_["workerId"] = std::make_shared<arrow::Int32Builder>(pool_);
-    event_info_builder_map_["eventId"] = std::make_shared<arrow::Int32Builder>(pool_);
-    event_info_builder_map_["eProton"] = std::make_shared<arrow::DoubleBuilder>(pool_);
-    event_info_builder_map_["theta"] = std::make_shared<arrow::DoubleBuilder>(pool_);
-    event_info_builder_map_["phi"] = std::make_shared<arrow::DoubleBuilder>(pool_);
+    arrayBuilder_.Init();
 
     worker_id_ = G4Threading::G4GetThreadId();
-    n_worker_event_ = worker_id_ * nevnet_per_worker;
+    worker_event_ = 0;
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -85,61 +73,17 @@ namespace B1
     G4int nofEvents = run->GetNumberOfEvent();
     if (nofEvents == 0)
       return;
-
-    // Finalize arrays
-    std::vector<std::string> cols = {"workerId", "eventId", "detName", "copyId", "eDep"};
-    arrow::ArrayVector arrayVec;
-    for (const auto &col : cols)
+    if (file_prefix_ != "")
     {
-      std::shared_ptr<arrow::Array> array;
-      PARQUET_THROW_NOT_OK(builder_map_[col]->Finish(&array));
-      arrayVec.emplace_back(array);
+      {
+        std::string fname = file_prefix_ + "/detectorData/worker" + std::to_string(G4Threading::G4GetThreadId()) + ".parquet";
+        arrayBuilder_.FinalizeDetectorData(fname);
+      }
+      {
+        std::string fname = file_prefix_ + "/particleData/worker" + std::to_string(G4Threading::G4GetThreadId()) + ".parquet";
+        arrayBuilder_.FinalizeParticleData(fname);
+      }
     }
-    std::vector<std::string> evt_cols = {"workerId", "eventId", "eProton", "theta", "phi"};
-    arrow::ArrayVector evt_arrayVec;
-    for (const auto &col : evt_cols)
-    {
-      std::shared_ptr<arrow::Array> array;
-      PARQUET_THROW_NOT_OK(event_info_builder_map_[col]->Finish(&array));
-      evt_arrayVec.emplace_back(array);
-    }
-
-    // Create schema
-    arrow::FieldVector fieldVec;
-    fieldVec.emplace_back(std::make_shared<arrow::Field>("workerId", arrow::int32()));
-    fieldVec.emplace_back(std::make_shared<arrow::Field>("eventId", arrow::int32()));
-    fieldVec.emplace_back(std::make_shared<arrow::Field>("detName", arrow::utf8()));
-    fieldVec.emplace_back(std::make_shared<arrow::Field>("copyId", arrow::int32()));
-    fieldVec.emplace_back(std::make_shared<arrow::Field>("eDep", arrow::float64()));
-    auto schema = arrow::schema(fieldVec);
-
-    arrow::FieldVector evt_fieldVec;
-    evt_fieldVec.emplace_back(std::make_shared<arrow::Field>("workerId", arrow::int32()));
-    evt_fieldVec.emplace_back(std::make_shared<arrow::Field>("eventId", arrow::int32()));
-    evt_fieldVec.emplace_back(std::make_shared<arrow::Field>("eProton", arrow::float64()));
-    evt_fieldVec.emplace_back(std::make_shared<arrow::Field>("theta", arrow::float64()));
-    evt_fieldVec.emplace_back(std::make_shared<arrow::Field>("phi", arrow::float64()));
-    auto evt_schema = arrow::schema(evt_fieldVec);
-
-    // Write table to file
-    G4int threadId = G4Threading::G4GetThreadId();
-    std::string filename = file_prefix_ + "/eDep/worker" + std::to_string(threadId) + ".parquet";
-    auto table = arrow::Table::Make(schema, arrayVec);
-    std::shared_ptr<arrow::io::FileOutputStream> outfile;
-    PARQUET_ASSIGN_OR_THROW(
-        outfile,
-        arrow::io::FileOutputStream::Open(filename));
-
-    PARQUET_THROW_NOT_OK(parquet::arrow::WriteTable(*table, pool_, outfile));
-
-    std::string evt_filename = file_prefix_ + "/evtInfo/worker_" + std::to_string(threadId) + ".parquet";
-    auto evt_table = arrow::Table::Make(evt_schema, evt_arrayVec);
-    std::shared_ptr<arrow::io::FileOutputStream> evt_outfile;
-    PARQUET_ASSIGN_OR_THROW(
-        evt_outfile,
-        arrow::io::FileOutputStream::Open(evt_filename));
-
-    PARQUET_THROW_NOT_OK(parquet::arrow::WriteTable(*evt_table, pool_, evt_outfile));
 
     // Run conditions
     //  note: There is no primary generator action object for "master"
@@ -180,20 +124,12 @@ namespace B1
 
   void RunAction::AddEdep(const std::string &detName, const G4double &eDep, G4int copyNum)
   {
-    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["workerId"].get())->Append(worker_id_));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["eventId"].get())->Append(n_worker_event_));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::StringBuilder *>(builder_map_["detName"].get())->Append(detName));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(builder_map_["copyId"].get())->Append(copyNum));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::DoubleBuilder *>(builder_map_["eDep"].get())->Append(eDep));
+    arrayBuilder_.FillEDep(worker_id_, worker_event_, detName, eDep, copyNum);
   }
 
-  void RunAction::AddEventInfo(const double &energy, const G4double &theta, const G4double &phi)
+  void RunAction::AddEventInfo(const double &energy, const G4double &theta, const G4double &phi, const G4ThreeVector &vec)
   {
-    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(event_info_builder_map_["workerId"].get())->Append(worker_id_));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::Int32Builder *>(event_info_builder_map_["eventId"].get())->Append(n_worker_event_));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::DoubleBuilder *>(event_info_builder_map_["eProton"].get())->Append(energy));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::DoubleBuilder *>(event_info_builder_map_["theta"].get())->Append(theta));
-    PARQUET_THROW_NOT_OK(static_cast<arrow::DoubleBuilder *>(event_info_builder_map_["phi"].get())->Append(phi));
+    arrayBuilder_.FillParticle(worker_id_, worker_event_, "gamma", energy, theta, phi, vec.getX(), vec.getY(), vec.getZ());
   }
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 }

@@ -35,10 +35,8 @@
 #include "globals.hh"
 
 #include <map>
-#include <arrow/api.h>
-#include <arrow/io/api.h>
-#include <parquet/arrow/writer.h>
 
+#include "SimArrayBuilder.hh"
 #include "ExpConstants.hh"
 class G4Run;
 
@@ -60,17 +58,15 @@ namespace B1
     void BeginOfRunAction(const G4Run *) override;
     void EndOfRunAction(const G4Run *) override;
 
-    void IncrementEvent() { ++n_worker_event_; }
+    void IncrementEvent() { ++worker_event_; }
     void AddEdep(const std::string &detName, const G4double &eDep, G4int copyNum);
-    void AddEventInfo(const G4double &energy, const G4double &theta, const G4double &phi);
+    void AddEventInfo(const G4double &energy, const G4double &theta, const G4double &phi, const G4ThreeVector &vec);
 
   private:
     const std::string file_prefix_;
-    u_int64_t n_worker_event_;
+    u_int64_t worker_event_;
     int worker_id_;
-    std::map<std::string, std::shared_ptr<arrow::ArrayBuilder>> builder_map_;
-    std::map<std::string, std::shared_ptr<arrow::ArrayBuilder>> event_info_builder_map_;
-    arrow::MemoryPool *pool_;
+    SimArrayBuilder arrayBuilder_;
   };
 
 }

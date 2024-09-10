@@ -53,12 +53,12 @@ namespace B1
     // default particle kinematic
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName;
-    G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "proton");
+    G4ParticleDefinition *particle = particleTable->FindParticle(particleName = "gamma");
     fParticleGun->SetParticleDefinition(particle);
 
-    fProtonGenerator = new ProtonGenerator;
-    fProtonGenerator->Clear();
-    fProtonGenerator->ReadFile("work/generated_data_2p.csv");
+    fGammaGenerator = std::make_unique<GammaGenerator>();
+    fGammaGenerator->Clear();
+    fGammaGenerator->ReadFile("work/60Co.txt");
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -79,15 +79,7 @@ namespace B1
     // on DetectorConstruction class we get Envelope volume
     // from G4LogicalVolumeStore.
 
-    G4ThreeVector direction;
-    G4ThreeVector position;
-    double energy;
-    fProtonGenerator->SetParticle(direction, energy, position);
-    anEvent->SetUserInformation(new InitParticleEventInfo(energy, direction.getTheta(), direction.getPhi()));
-    fParticleGun->SetParticleMomentumDirection(direction);
-    fParticleGun->SetParticleEnergy(energy);
-    fParticleGun->SetParticlePosition(position);
-    fParticleGun->GeneratePrimaryVertex(anEvent);
+    fGammaGenerator->SetParticles(fParticleGun, anEvent);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
