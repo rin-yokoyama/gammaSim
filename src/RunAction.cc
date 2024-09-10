@@ -76,12 +76,12 @@ namespace B1
     if (file_prefix_ != "")
     {
       {
-        std::string fname = file_prefix_ + "/detectorData/worker" + std::to_string(G4Threading::G4GetThreadId()) + ".parquet";
-        arrayBuilder_.FinalizeDetectorData(fname);
-      }
-      {
         std::string fname = file_prefix_ + "/particleData/worker" + std::to_string(G4Threading::G4GetThreadId()) + ".parquet";
         arrayBuilder_.FinalizeParticleData(fname);
+      }
+      {
+        std::string fname = file_prefix_ + "/detectorData/worker" + std::to_string(G4Threading::G4GetThreadId()) + ".parquet";
+        arrayBuilder_.FinalizeDetectorData(fname);
       }
     }
 

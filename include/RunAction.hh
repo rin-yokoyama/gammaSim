@@ -53,7 +53,7 @@ namespace B1
   {
   public:
     RunAction(const std::string &file_prefix);
-    ~RunAction() {};
+    virtual ~RunAction() {};
 
     void BeginOfRunAction(const G4Run *) override;
     void EndOfRunAction(const G4Run *) override;

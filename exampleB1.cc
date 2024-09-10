@@ -35,6 +35,7 @@
 #include "G4UImanager.hh"
 
 #include "G4VisExecutive.hh"
+#include "G4PhysListFactory.hh"
 #include "G4UIExecutive.hh"
 
 #include "Randomize.hh"
@@ -89,6 +90,8 @@ int main(int argc, char **argv)
 
   // Physics list
   G4VModularPhysicsList *physicsList = new GammaPhysicsList();
+  // G4PhysListFactory factory;
+  // G4VModularPhysicsList *physicsList = factory.GetReferencePhysList("QGSP_BIC_HP_EMZ");
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
 
@@ -113,8 +116,7 @@ int main(int argc, char **argv)
     UImanager->ApplyCommand("/control/macroPath ./");
     G4String command = "/control/execute ";
     std::string macFileName = argv[1];
-    if (!createOrCleanDirectory(outFileName))
-      return 1;
+    createOrCleanDirectory(outFileName);
     if (!createOrCleanDirectory(outFileName + "/detectorData"))
       return 1;
     if (!createOrCleanDirectory(outFileName + "/particleData"))

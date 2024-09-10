@@ -1,4 +1,4 @@
-34				
+35				
 gd1692	0.000213	2		
 Egamma	to	probability	p_gamma	
 937	gd755	0.159797721	0.996810207	
@@ -55,8 +55,8 @@ Egamma	to	probability	p_gamma
 gd1282	0.00035	3		
 Egamma	to	probability	p_gamma	
 172.1	gd1109	0.024803926	0.73046019	
-351.67	gd351	0.399374466	0.964041261	
-526.886	gd526	0.575821607	0.983284169	
+351.67	gd931	0.399374466	0.964041261	
+526.886	gd755	0.575821607	0.983284169	
 				
 gd1123	0.1378	3		
 Egamma	to	probability	p_gamma	
@@ -123,7 +123,7 @@ Egamma	to	probability	p_gamma
 				
 sm1650	0.00923	6		
 Egamma	to	probability	p_gamma	
-357.26	sm1290	0.005438318	0.967960507	
+357.26	sm1293	0.005438318	0.967960507	
 416.052	sm1234	0.127415993	0.979144228	
 564.021	sm1086	0.528260693	0.996492347	
 686.61	sm963	0.02170725	0.994263102	
@@ -223,6 +223,10 @@ sm707	0	1
 Egamma	to	probability	p_gamma	
 340.48	sm366	1	0.963205548	
 				
+sm685   0   1
+Egamma	to	probability	p_gamma	
+562.98  sm122   1   0.990589401
+
 sm366	0.009	1		
 Egamma	to	probability	p_gamma	
 244.6989	sm122	1	0.903097625	

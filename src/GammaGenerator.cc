@@ -42,7 +42,7 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
     for (const auto &en : energies)
     {
         // Energy
-        gun->SetParticleEnergy(en);
+        gun->SetParticleEnergy(en * keV);
 
         // Direction
         G4ThreeVector direction(G4RandomDirection());

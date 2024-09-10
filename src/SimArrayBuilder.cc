@@ -35,6 +35,7 @@ void SimArrayBuilder::Init()
         arrow::FieldVector fieldVec;
         fieldVec.emplace_back(std::make_shared<arrow::Field>("workerId", arrow::int32()));
         fieldVec.emplace_back(std::make_shared<arrow::Field>("eventId", arrow::uint64()));
+        fieldVec.emplace_back(std::make_shared<arrow::Field>("pName", arrow::utf8()));
         fieldVec.emplace_back(std::make_shared<arrow::Field>("energy", arrow::float64()));
         fieldVec.emplace_back(std::make_shared<arrow::Field>("theta", arrow::float64()));
         fieldVec.emplace_back(std::make_shared<arrow::Field>("phi", arrow::float64()));
@@ -70,8 +71,8 @@ void SimArrayBuilder::FillParticle(const int workerId, const uint64_t &eventId, 
 void SimArrayBuilder::FinalizeDetectorData(const std::string &filename)
 {
     // Finalize arrays
-    arrow::ArrayVector arrayVec;
     std::vector<std::shared_ptr<arrow::ArrayBuilder>> builders = {detWorkerIdBuilder_, detEventIdBuilder_, detNameBuilder_, copyIdBuilder_, eDepBuilder_};
+    arrow::ArrayVector arrayVec(builders.size());
     std::transform(builders.begin(), builders.end(), arrayVec.begin(), [](std::shared_ptr<arrow::ArrayBuilder> x)
                    { std::shared_ptr<arrow::Array> array; PARQUET_THROW_NOT_OK(x->Finish(&array)); return array; });
 
@@ -88,8 +89,8 @@ void SimArrayBuilder::FinalizeDetectorData(const std::string &filename)
 void SimArrayBuilder::FinalizeParticleData(const std::string &filename)
 {
     // Finalize arrays
-    arrow::ArrayVector arrayVec;
     std::vector<std::shared_ptr<arrow::ArrayBuilder>> builders = {particleWorkerIdBuilder_, particleEventIdBuilder_, particleNameBuilder_, particleEnergyBuilder_, particleDirThetaBuilder_, particleDirPhiBuilder_, particlePosXBuilder_, particlePosYBuilder_, particlePosZBuilder_};
+    arrow::ArrayVector arrayVec(builders.size());
     std::transform(builders.begin(), builders.end(), arrayVec.begin(), [](std::shared_ptr<arrow::ArrayBuilder> x)
                    { std::shared_ptr<arrow::Array> array; PARQUET_THROW_NOT_OK(x->Finish(&array)); return array; });
 

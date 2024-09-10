@@ -10,7 +10,8 @@
             "request": "launch",
             "program": "${workspaceFolder}/build/exampleB1",
             "args": [
-                "run1.mac"
+                "run1.mac",
+                "work/output/co60"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

@@ -39,6 +39,7 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 #include "InitParticleEventInfo.hh"
+#include "ExpConstants.hh"
 
 namespace B1
 {
@@ -58,7 +59,7 @@ namespace B1
 
     fGammaGenerator = std::make_unique<GammaGenerator>();
     fGammaGenerator->Clear();
-    fGammaGenerator->ReadFile("work/60Co.txt");
+    fGammaGenerator->ReadFile(B1::kSourceFile);
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
