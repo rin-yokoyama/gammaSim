@@ -10,7 +10,7 @@ public:
     InitParticleEventInfo() : eGammas_(), directions_(), positions_() {};
     ~InitParticleEventInfo() {};
 
-    void AppendData(const double &e, const G4ThreeVector &dir, const G4ThreeVector &pos)
+    void AppendData(const double &e, const G4ThreeVector dir, const G4ThreeVector pos)
     {
         eGammas_.emplace_back(e);
         directions_.emplace_back(dir);

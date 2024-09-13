@@ -37,6 +37,19 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
 {
     auto info = new InitParticleEventInfo();
 
+    // Position
+    G4ThreeVector position(0, 0, 0);
+    if (point_source_)
+    {
+    }
+    else
+    {
+        position.setX((G4UniformRand() - 0.5) * sizeX_ * mm);
+        position.setY((G4UniformRand() - 0.5) * sizeY_ * mm);
+        position.setZ((G4UniformRand() - 0.5) * sizeZ_ * mm);
+    }
+
+    // Gamma rays
     gamma_source_->EmitGamma();
     auto energies = gamma_source_->GetEGamma();
     for (const auto &en : energies)
@@ -48,17 +61,6 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
         G4ThreeVector direction(G4RandomDirection());
         gun->SetParticleMomentumDirection(direction);
 
-        // Position
-        G4ThreeVector position(0, 0, 0);
-        if (point_source_)
-        {
-        }
-        else
-        {
-            position.setX((G4UniformRand() - 0.5) * sizeX_ * mm);
-            position.setY((G4UniformRand() - 0.5) * sizeY_ * mm);
-            position.setZ((G4UniformRand() - 0.5) * sizeZ_ * mm);
-        }
         gun->SetParticlePosition(position);
 
         gun->GeneratePrimaryVertex(anEvent);

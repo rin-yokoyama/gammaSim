@@ -22,7 +22,7 @@ namespace B1
     static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
     static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness), 0);
     static G4RotationMatrix kSampleRotation(0, 0, 0);
-    static G4ThreeVector kSamplePosition(0, 0, 0);
+    static G4ThreeVector kSamplePosition(0, kSourceSizeY / 2., 0);
 }
 
 #endif

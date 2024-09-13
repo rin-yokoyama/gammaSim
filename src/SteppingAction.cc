@@ -61,17 +61,18 @@ namespace B1
     G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
 
     // check if we are in scoring volume
-    // if (volume != fScoringVolume)
-    //  return;
+    if (volume != fScoringVolume)
+      return;
 
     // collect energy deposited in this step
     G4double edepStep = step->GetTotalEnergyDeposit();
     G4int copyNum = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetCopyNo();
+    fEventAction->AddGeEdep(edepStep, copyNum);
 
-    if (volume->GetName() == "Ge")
-    {
-      fEventAction->AddGeEdep(edepStep, copyNum);
-    }
+    // if (volume->GetName() == "Ge")
+    //{
+    //   fEventAction->AddGeEdep(edepStep, copyNum);
+    // }
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

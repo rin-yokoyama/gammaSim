@@ -83,18 +83,24 @@ namespace B1
                                        checkOverlaps);  // overlaps checking
 
     // Mother logical volume for detector geometry
-    auto solidDet = new G4Box("Detector",                                                 // its name
-                              0.1 * world_sizeXY, 0.1 * world_sizeXY, 0.1 * world_sizeZ); // its size
+    auto solidDet = new G4Box("Detector",                                                       // its name
+                              0.1 * world_sizeXY, -B1::kDetPosition.getY(), 0.1 * world_sizeZ); // its size
     auto logicDet = new G4LogicalVolume(solidDet, det_mat, "detectorMother");
     G4VisAttributes *invisibleAttributes = new G4VisAttributes();
     invisibleAttributes->SetVisibility(false);
     logicDet->SetVisAttributes(invisibleAttributes);
 
+    // Place the detector mother volume in the world volume
+    new G4PVPlacement(&B1::kDetRotation, B1::kDetPosition, logicDet, "detector", logicWorld, false, 0, checkOverlaps);
+
     // Mother logical volume for sample geometry
-    auto solidSample = new G4Box("Sample",                                                   // its name
-                                 0.1 * world_sizeXY, 0.1 * world_sizeXY, 0.1 * world_sizeZ); // its size
+    auto solidSample = new G4Box("Sample",                                                      // its name
+                                 0.1 * world_sizeXY, B1::kSourceSizeY / 2., 0.1 * world_sizeZ); // its size
     auto logicSample = new G4LogicalVolume(solidSample, det_mat, "sampleMother");
     logicSample->SetVisAttributes(invisibleAttributes);
+
+    // Place the sample mother volume in the world volume
+    new G4PVPlacement(&B1::kSampleRotation, B1::kSamplePosition, logicSample, "sample", logicWorld, false, 0, checkOverlaps);
 
     if (!B1::kUseSource)
     {
@@ -154,7 +160,7 @@ namespace B1
     //
     fScoringVolume = geLogic;
 
-    /// Ge window
+    // Ge window
     auto window_mat = nist->FindOrBuildMaterial("G4_Mg");
     auto windowTube = new G4Tubs("Window", 0, B1::kGeRadius * 1.1, B1::kWindowThickness, 2 * M_PI, 2 * M_PI);
     auto windowLogic = new G4LogicalVolume(windowTube, window_mat, "Window");
@@ -162,12 +168,6 @@ namespace B1
     G4VisAttributes *windowVisAttributes = new G4VisAttributes();
     windowVisAttributes->SetColor(1, 1, 0, 0.8);
     windowLogic->SetVisAttributes(windowVisAttributes);
-
-    // Place the detector mother volume in the world volume
-    new G4PVPlacement(&B1::kDetRotation, B1::kDetPosition, logicDet, "detector", logicWorld, false, 0);
-
-    // Place the sample mother volume in the world volume
-    new G4PVPlacement(&B1::kSampleRotation, B1::kSamplePosition, logicSample, "sample", logicWorld, false, 0);
 
     //
     // always return the physical World

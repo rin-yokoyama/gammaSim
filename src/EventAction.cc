@@ -62,6 +62,7 @@ namespace B1
       auto dir = info->GetDirections().at(i);
       auto pos = info->GetPositions().at(i);
       runAction_->AddEventInfo(en, dir.getTheta(), dir.getPhi(), pos);
+      ++i;
     }
     for (const auto &ge : GeMap_)
     {

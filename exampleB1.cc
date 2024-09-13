@@ -90,7 +90,7 @@ int main(int argc, char **argv)
 
   // Physics list
   G4VModularPhysicsList *physicsList = new GammaPhysicsList();
-  // G4PhysListFactory factory;
+  G4PhysListFactory factory;
   // G4VModularPhysicsList *physicsList = factory.GetReferencePhysList("QGSP_BIC_HP_EMZ");
   physicsList->SetVerboseLevel(1);
   runManager->SetUserInitialization(physicsList);
