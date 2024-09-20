@@ -41,6 +41,7 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
     G4ThreeVector position(0, 0, 0);
     if (point_source_)
     {
+        G4ThreeVector position = B1::kSamplePosition
     }
     else
     {
