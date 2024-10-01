@@ -1,0 +1,4 @@
+gd1315   0.157   2
+Egamma  to  probability p_gamma
+1314.61  gnd  0.6232826218   1
+970.33  gd344  0.3753099658  1
