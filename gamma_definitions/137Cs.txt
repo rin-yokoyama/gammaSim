@@ -1,3 +1,8 @@
-1
+2
 Ba662   0.947   1
+Egamma  to  probability p_gamma
 661.657 gnd 1   1
+
+Ba284   0.0000058   1
+Egamma  to  probability p_gamma
+283.50  gnd 1   1
