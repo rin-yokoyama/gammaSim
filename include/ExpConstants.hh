@@ -8,7 +8,7 @@ namespace B1
 {
     const G4String kSourceFile = "./gamma_definitions/60Co.txt";
     const G4double kWorldSize = 200. * cm;
-    const G4double kGeRadius = 58.0 * mm;
+    const G4double kGeRadius = 60.0 * mm;
     const G4double kGeLength = 54.6 * mm;
     const G4double kWindowThickness = 1.5 * mm;
     static G4ThreeVector kWindowPos(0, 0, B1::kGeLength / 2.0 + 3.0 * mm);
