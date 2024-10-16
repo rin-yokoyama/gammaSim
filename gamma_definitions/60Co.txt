@@ -1,9 +1,14 @@
-2
+3
 ni2506  0.9988  3
 Egamma  to  probability p_gamma
 347.14  ni2159  0.0000751070    1
 1173.228    ni1333  0.9999248729    1
-2505.692    gnd    0.00000002   1
+2505.692    gnd 0.00000002  1
+
+ni2159  0   2
+Egamma  to  probability p_gamma
+2158.57 gnd 0.1555555556    1
+826.10  ni1333  0.8444444444    1
 
 ni1333  0.0012  1
 Egamma  to  probability p_gamma
