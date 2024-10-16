@@ -6,7 +6,7 @@
 
 namespace B1
 {
-    const G4String kSourceFile = "./gamma_definitions/152Eu(updated).txt";
+    const G4String kSourceFile = "./gamma_definitions/update152Eu.txt";
     const G4double kWorldSize = 200. * cm;
     const G4double kGeRadius = 57.1 * mm;
     const G4double kGeLength = 54.6 * mm;
