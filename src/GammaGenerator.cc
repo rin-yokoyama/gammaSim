@@ -41,7 +41,7 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
     G4ThreeVector position(0, 0, 0);
     if (point_source_)
     {
-        position = B1::kSamplePosition;    
+        position = B1::kSamplePosition;
     }
     else
     {
@@ -53,6 +53,7 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
     // Gamma rays
     gamma_source_->EmitGamma();
     auto energies = gamma_source_->GetEGamma();
+    G4ThreeVector direction1173;
     for (const auto &en : energies)
     {
         // Energy
@@ -60,6 +61,23 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
 
         // Direction
         G4ThreeVector direction(G4RandomDirection());
+        if (B1::k60CoGammaAngularCorrelation)
+        {
+            if (en == 1173.228)
+            {
+                direction1173 = direction;
+            }
+            if (en == 1332.492)
+            {
+                double theta, p;
+                do
+                {
+                    direction = G4RandomDirection();
+                    theta = direction1173.angle(direction);
+                    p = (1 + 0.125 * pow(cos(theta), 2) + 0.0417 * pow(cos(theta), 4)) / 1.1667;
+                } while (p > rand());
+            }
+        }
         gun->SetParticleMomentumDirection(direction);
 
         gun->SetParticlePosition(position);
