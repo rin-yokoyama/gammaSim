@@ -22,7 +22,7 @@ namespace B1
     static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
     static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness), 0);
     static G4RotationMatrix kSampleRotation(0, 0, 0);
-    static G4ThreeVector kSamplePosition(20. * mm, (kSourceSizeY / 2.), 10. * mm);
+    static G4ThreeVector kSamplePosition(15. * mm, (kSourceSizeY / 2.), 10. * mm);
     static const bool k60CoGammaAngularCorrelation = true;
 }
 
