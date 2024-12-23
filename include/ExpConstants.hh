@@ -6,7 +6,7 @@
 
 namespace B1
 {
-    const G4String kSourceFile = "./gamma_definitions/137Cs.txt";
+    const G4String kSourceFile = "./gamma_definitions/152Eu.txt";
     const G4double kWorldSize = 200. * cm;
     const G4double kGeRadius = (57.1 * mm) / 2.;
     const G4double kGeLength = 54.6 * mm;
@@ -22,7 +22,7 @@ namespace B1
     static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
     static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness), 0);
     static G4RotationMatrix kSampleRotation(0, 0, 0);
-    static G4ThreeVector kSamplePosition(5. * mm, (kSourceSizeY / 2.) + 3. *mm, 0);
+    static G4ThreeVector kSamplePosition(0, (kSourceSizeY / 2.) + 3. *mm, 0);
     static const bool k60CoGammaAngularCorrelation = true;
 }
 
