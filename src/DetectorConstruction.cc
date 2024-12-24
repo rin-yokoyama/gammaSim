@@ -166,7 +166,7 @@ namespace B1
     auto windowLogic = new G4LogicalVolume(windowTube, window_mat, "Window");
     new G4PVPlacement(nullptr, B1::kWindowPos, windowLogic, "window", logicDet, false, 0);
     G4VisAttributes *windowVisAttributes = new G4VisAttributes();
-    windowVisAttributes->SetColor(1, 1, 0, 0.8);
+    windowVisAttributes::SetColor(G4double red);
     windowLogic->SetVisAttributes(windowVisAttributes);
 
     //
