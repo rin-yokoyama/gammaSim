@@ -14,6 +14,8 @@ namespace B1
     const G4double kdeadlength = 54.6 * mm;
     const G4double kWindowThickness = 1.5 * mm;
     static G4ThreeVector kWindowPos(0, 0, B1::kGeLength / 2.0 + 3.0 * mm);
+    const G4double kPlasticThickness = 3. * mm;
+    static G4ThreeVector kPlasticPos(0, -kWindowThickness, 0);
     const G4bool kUseSource = true; // otherwise array
     const G4double kSourceSizeX = 23.5 * mm;
     const G4double kSourceSizeY = 2.1 * mm;
@@ -22,7 +24,7 @@ namespace B1
     const G4double kArraySizeY = 2.5 * mm;
     const G4double kArraySizeZ = 50.0 * mm;
     static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
-    static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness + (3. * mm)), 0);
+    static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness + kPlasticThickness), 0);
     static G4RotationMatrix kSampleRotation(0, 0, 0);
     static G4ThreeVector kSamplePosition(0, kSourceSizeY / 2., 0);
     static const bool k60CoGammaAngularCorrelation = true;

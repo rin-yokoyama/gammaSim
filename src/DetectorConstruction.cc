@@ -195,6 +195,15 @@ namespace B1
     windowVisAttributes->SetColor(1, 1, 0, 0.8);
     windowLogic->SetVisAttributes(windowVisAttributes);
 
+    // Plastic layer
+    auto pl_mat = nist->FindOrBuildMaterial("G4_A-150_TISSUE")
+    auto plasticTube = new G4Tubs("Plastic", 0, B1::kGeRadius , B1::kPlasticThickness, 2 * M_PI, 2 * M_PI);
+    auto plasticLogic = new G4LogicalVolume(plasticTube, pl_mat, "Plastic");
+    new G4PVPlacement(nullptr, B1::kPlasticPos, plasticLogic, "Plastic", logicDet, false, 0);
+    G4VisAttributes *plasticVisAttributes = new G4VisAttributes;
+    plasticVisAttributes->SetColor(1, 0, 1, 0.8);
+    plasticLogic->SetVisAttributes(plasticVisAttributes)
+
     //
     // always return the physical World
     //
