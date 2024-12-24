@@ -129,6 +129,7 @@ namespace B1
       auto boxSource = new G4Box("Source", B1::kSourceSizeX / 2., B1::kSourceSizeY / 2., B1::kSourceSizeZ / 2.);
       auto logicSource = new G4LogicalVolume(boxSource, source_mat, "Source");
       G4ThreeVector source_pos(0, B1::kSourceSizeY / 2., 0);
+      sourceVisAttributes->SetColor(1, 0, 1, 0.8);
       new G4PVPlacement(nullptr, source_pos, logicSource, "source", logicSample, false, 0, checkOverlaps);
     }
 
