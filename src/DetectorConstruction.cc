@@ -174,12 +174,12 @@ namespace B1
     // Ge dead layer
     G4Material *dlayer_mat = nist->FindOrBuildMaterial("G4_Ge");
 
-    auto dlayerTube = new G4Tubs("Dead layer", B1::kGeRadius, B1::kdeadradius, B1::kdeadlength, 2 * M_PI, 2 * M_PI);
+    auto dlayerTube = new G4Tubs("Dead layer", B1::kGeRadius, B1::kdeadradius, B1::kdeadlength / 2., 2 * M_PI, 2 * M_PI);
     auto dlayerLogic = new G4LogicalVolume(dlayerTube,      // its solid
                                             dlayer_mat,    // its material
                                             "Dead layer"); //its name  
     G4VisAttributes *dlayerVisAttributes = new G4VisAttributes();
-    dlayerVisAttributes->SetColour(1, 0, 0, 0.8);
+    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 1);
     dlayerLogic->SetVisAttributes(dlayerVisAttributes);
 
     //
