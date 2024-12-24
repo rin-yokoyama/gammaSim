@@ -20,9 +20,9 @@ namespace B1
     const G4double kArraySizeY = 2.5 * mm;
     const G4double kArraySizeZ = 50.0 * mm;
     static G4RotationMatrix kDetRotation(0, -90 * deg, 0);
-    static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness), 0);
+    static G4ThreeVector kDetPosition(0, -(kWindowPos.getZ() + kWindowThickness + (3. * mm)), 0);
     static G4RotationMatrix kSampleRotation(0, 0, 0);
-    static G4ThreeVector kSamplePosition(0, (kSourceSizeY / 2.) + 3. *mm, 0);
+    static G4ThreeVector kSamplePosition(0, kSourceSizeY / 2., 0);
     static const bool k60CoGammaAngularCorrelation = true;
 }
 
