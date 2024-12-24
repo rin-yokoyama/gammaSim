@@ -147,6 +147,17 @@ namespace B1
     detVisAttributes->SetColor(0, 1, 1, 0.8);
     geLogic->SetVisAttributes(detVisAttributes);
 
+    // Ge dead layer
+    G4Material *dlayer_mat = nist->FindOrBuildMaterial("G4_Ge");
+
+    auto dlayerTube = new G4Tubs("Dead layer", B1::kGeRadius, B1::kdeadradius, B1::kdeadlength / 2., 2 * M_PI, 2 * M_PI);
+    auto dlayerLogic = new G4LogicalVolume(dlayerTube,      // its solid
+                                            dlayer_mat,    // its material
+                                            "Dead layer"); //its name  
+    G4VisAttributes *dlayerVisAttributes = new G4VisAttributes();
+    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 1);
+    dlayerLogic->SetVisAttributes(dlayerVisAttributes);
+
     {
       // Place Ge in the detector mother volume
       new G4PVPlacement(nullptr,                // no rotation
@@ -154,6 +165,16 @@ namespace B1
                         geLogic,                // its logical volume
                         "Ge",                   // its name
                         logicDet,               // its mother  volume
+                        false,                  // no boolean operation
+                        0,                      // copy number
+                        checkOverlaps);         // overlaps checking
+      
+      // Place dead layer in the detector mother volume
+      new G4PVPlacement(nullptr,                // no rotation
+                        G4ThreeVector(0,0,0),   // at position
+                        dlayerLogic,            // its logical volume
+                        "Dead layer",           // its name
+                        logicDet,               // its mother volume
                         false,                  // no boolean operation
                         0,                      // copy number
                         checkOverlaps);         // overlaps checking
@@ -170,17 +191,6 @@ namespace B1
     G4VisAttributes *windowVisAttributes = new G4VisAttributes();
     windowVisAttributes->SetColor(1, 1, 0, 0.8);
     windowLogic->SetVisAttributes(windowVisAttributes);
-
-    // Ge dead layer
-    G4Material *dlayer_mat = nist->FindOrBuildMaterial("G4_Ge");
-
-    auto dlayerTube = new G4Tubs("Dead layer", B1::kGeRadius, B1::kdeadradius, B1::kdeadlength / 2., 2 * M_PI, 2 * M_PI);
-    auto dlayerLogic = new G4LogicalVolume(dlayerTube,      // its solid
-                                            dlayer_mat,    // its material
-                                            "Dead layer"); //its name  
-    G4VisAttributes *dlayerVisAttributes = new G4VisAttributes();
-    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 1);
-    dlayerLogic->SetVisAttributes(dlayerVisAttributes);
 
     //
     // always return the physical World

@@ -8,8 +8,8 @@ namespace B1
 {
     const G4String kSourceFile = "./gamma_definitions/152Eu.txt";
     const G4double kWorldSize = 200. * cm;
-    const G4double kGeRadius = ((57.1 * mm) / 2.) - (1. * mm);  // 27.55mm
-    const G4double kGeLength = (54.6 * mm) - (1. * mm);
+    const G4double kGeRadius = ((57.1 * mm) / 2.) - (10. * mm);  // 27.55mm
+    const G4double kGeLength = (54.6 * mm) - (10. * mm);
     const G4double kdeadradius = (57.1 * mm) / 2. ; // 28.55mm
     const G4double kdeadlength = 54.6 * mm;
     const G4double kWindowThickness = 1.5 * mm;
