@@ -36,6 +36,7 @@
 #include "G4Orb.hh"
 #include "G4Tubs.hh"
 #include "G4Sphere.hh"
+#include "G4SubtractionSolid.hh"
 #include "G4Trd.hh"
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
@@ -150,12 +151,14 @@ namespace B1
     // Ge dead layer
     G4Material *dlayer_mat = nist->FindOrBuildMaterial("G4_Ge");
 
-    auto dlayerTube = new G4Tubs("Dead layer", B1::kGeRadius, B1::kdeadradius, B1::kdeadlength / 2., 2 * M_PI, 2 * M_PI);
-    auto dlayerLogic = new G4LogicalVolume(dlayerTube,      // its solid
-                                            dlayer_mat,    // its material
-                                            "Dead layer"); //its name  
+    auto dlayerTube = new G4Tubs("Dead layer outer", 0, B1::kdeadradius, B1::kdeadlength / 2., 2 * M_PI, 2 * M_PI);
+    auto dlayerHoleTube = new G4Tubs("Dead layer hole", 0, B1::kGeRadius, B1::kGeLength / 2., 2 * M_PI, 2 * M_PI);
+    auto dlayer = new G4SubtractionSolid("Dead layer", dlayerTube, dlayerHoleTube);
+    auto dlayerLogic = new G4LogicalVolume(dlayer,        // its solid
+                                           dlayer_mat,    // its material
+                                           "Dead layer"); // its name
     G4VisAttributes *dlayerVisAttributes = new G4VisAttributes();
-    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 1);
+    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 0.5);
     dlayerLogic->SetVisAttributes(dlayerVisAttributes);
 
     {
@@ -168,10 +171,10 @@ namespace B1
                         false,                  // no boolean operation
                         0,                      // copy number
                         checkOverlaps);         // overlaps checking
-      
+
       // Place dead layer in the detector mother volume
       new G4PVPlacement(nullptr,                // no rotation
-                        G4ThreeVector(0,0,0),   // at position
+                        G4ThreeVector(0, 0, 0), // at position
                         dlayerLogic,            // its logical volume
                         "Dead layer",           // its name
                         logicDet,               // its mother volume
