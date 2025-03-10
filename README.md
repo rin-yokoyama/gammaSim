@@ -1,5 +1,6 @@
 # gammaSim
 This is a gamma-ray detection simulation package using Geant4 for a coaxial HPGe detector.
+This package is based on exampleB1 in the Geant4 examples.
 ## Requirement
 - CMake >3.16
 - C++17
@@ -38,7 +39,7 @@ Just `build/exampleB1` to launch interpreter and viewer.
 
 ## Geometry settings
 Variables for the geometry settings are defined in `include/ExpConstants.hh`.
-You can change which source definition file to use in the simulation here.
+You can also change which source definition file to use in the simulation here.
 
 ## Gamma definitions
 Text files in the `gamma_definitions` folder are the files defining the decay scheme and gamma emissions. The format of the file is as following.
