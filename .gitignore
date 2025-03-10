@@ -6,7 +6,7 @@
 !CMakeLists.txt
 !exampleB1.cc
 !init_vis.mac
-!README
+!README.md
 !run1.mac
 !run2.mac
 !tsg_offscreen.mac
