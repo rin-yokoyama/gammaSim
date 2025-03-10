@@ -45,7 +45,7 @@ void GammaGenerator::SetParticles(G4ParticleGun *gun, G4Event *anEvent)
     }
     else
     {
-        position.setX((G4UniformRand() - 0.5) * sizeX_ * mm);
+        position.setX((G4UniformRand() - 0.5) * sizeX_ * mm);  // array size -- already set in constant
         position.setY((G4UniformRand() - 0.5) * sizeY_ * mm);
         position.setZ((G4UniformRand() - 0.5) * sizeZ_ * mm);
     }

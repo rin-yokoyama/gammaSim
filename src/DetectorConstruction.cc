@@ -138,14 +138,16 @@ namespace B1
     /// Ge crystal
     G4Material *ge_mat = nist->FindOrBuildMaterial("G4_Ge");
 
-    auto geTube = new G4Tubs("Ge", 0, B1::kGeRadius, B1::kGeLength / 2., 2 * M_PI, 2 * M_PI);
+    auto geTube = new G4Tubs("GeTube", 0, B1::kGeRadius, B1::kGeLength / 2., 2 * M_PI, 2 * M_PI);
+    auto geHole = new G4Tubs("Hole", 0, B1::kGeHoleRadiusRatio * B1::kGeRadius, B1::kGeHoleLengthRatio * B1::kGeLength / 2., 2 * M_PI, 2 * M_PI);
+    auto geSolid = new G4SubtractionSolid("Ge", geTube, geHole, G4Transform3D(CLHEP::HepRotation(0, 0, 0), CLHEP::Hep3Vector(0, 0, (B1::kGeHoleLengthRatio - 1.0) * B1::kGeLength / 2.0)));
 
-    auto geLogic = new G4LogicalVolume(geTube, // its solid
-                                       ge_mat, // its material
-                                       "Ge");  // its name
+    auto geLogic = new G4LogicalVolume(geSolid, // its solid
+                                       ge_mat,  // its material
+                                       "Ge");   // its name
 
     G4VisAttributes *detVisAttributes = new G4VisAttributes();
-    detVisAttributes->SetColor(0, 1, 1, 0.8);
+    detVisAttributes->SetColor(0, 1, 1, 0.9);
     geLogic->SetVisAttributes(detVisAttributes);
 
     // Ge dead layer
@@ -158,7 +160,7 @@ namespace B1
                                            dlayer_mat,    // its material
                                            "Dead layer"); // its name
     G4VisAttributes *dlayerVisAttributes = new G4VisAttributes();
-    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 0.5);
+    dlayerVisAttributes->SetColour(0.5, 0.5, 0.5, 0.2);
     dlayerLogic->SetVisAttributes(dlayerVisAttributes);
 
     {
@@ -188,21 +190,32 @@ namespace B1
 
     // Ge window
     auto window_mat = nist->FindOrBuildMaterial("G4_Mg");
-    auto windowTube = new G4Tubs("Window", 0, B1::kGeRadius * 1.1, B1::kWindowThickness, 2 * M_PI, 2 * M_PI);
+    auto windowTube = new G4Tubs("Window", 0, B1::kGeRadius * 1.1, B1::kWindowThickness / 2., 2 * M_PI, 2 * M_PI);
     auto windowLogic = new G4LogicalVolume(windowTube, window_mat, "Window");
     new G4PVPlacement(nullptr, B1::kWindowPos, windowLogic, "window", logicDet, false, 0);
     G4VisAttributes *windowVisAttributes = new G4VisAttributes();
     windowVisAttributes->SetColor(1, 1, 0, 0.8);
     windowLogic->SetVisAttributes(windowVisAttributes);
 
+    // Pb
+    auto lead_mat = nist->FindOrBuildMaterial("G4_Pb");
+    auto leadOuter = new G4Box("leadOuter", 135 * mm / 2., 100 * mm, 135 * mm / 2.);
+    auto leadInner = new G4Box("leadInner", 70 * mm / 2., 70 * mm, 70 * mm / 2.);
+    auto leadBox = new G4SubtractionSolid("lead", leadOuter, leadInner);
+    auto leadLogic = new G4LogicalVolume(leadBox, lead_mat, "leadLogic");
+    new G4PVPlacement(nullptr, G4ThreeVector(0, 0, 0), leadLogic, "lead", logicWorld, false, 0);
+    G4VisAttributes *leadVisAttributes = new G4VisAttributes();
+    leadVisAttributes->SetColor(0, 1, 0, 0.2);
+    leadLogic->SetVisAttributes(leadVisAttributes);
+
     // Plastic layer
-    auto pl_mat = nist->FindOrBuildMaterial("G4_A-150_TISSUE")
-    auto plasticTube = new G4Tubs("Plastic", 0, B1::kGeRadius , B1::kPlasticThickness, 2 * M_PI, 2 * M_PI);
-    auto plasticLogic = new G4LogicalVolume(plasticTube, pl_mat, "Plastic");
-    new G4PVPlacement(nullptr, B1::kPlasticPos, plasticLogic, "Plastic", logicDet, false, 0);
-    G4VisAttributes *plasticVisAttributes = new G4VisAttributes;
-    plasticVisAttributes->SetColor(1, 0, 1, 0.8);
-    plasticLogic->SetVisAttributes(plasticVisAttributes)
+    // auto pl_mat = nist->FindOrBuildMaterial("G4_A-150_TISSUE");
+    // auto plasticTube = new G4Tubs("Plastic", 0, B1::kGeRadius, B1::kPlasticThickness / 2., 2 * M_PI, 2 * M_PI);
+    // auto plasticLogic = new G4LogicalVolume(plasticTube, pl_mat, "Plastic");
+    // new G4PVPlacement(nullptr, B1::kPlasticPos, plasticLogic, "Plastic", logicDet, false, 0);
+    // G4VisAttributes *plasticVisAttributes = new G4VisAttributes;
+    // plasticVisAttributes->SetColor(1, 0, 1, 0.8);
+    // plasticLogic->SetVisAttributes(plasticVisAttributes);
 
     //
     // always return the physical World

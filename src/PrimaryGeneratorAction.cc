@@ -59,7 +59,15 @@ namespace B1
 
     fGammaGenerator = std::make_unique<GammaGenerator>();
     fGammaGenerator->Clear();
-    fGammaGenerator->ReadFile(B1::kSourceFile);
+    if (B1::kUseSource)
+    {
+      fGammaGenerator->ReadFile(B1::kSourceFile);
+    }
+    else
+    {
+      fGammaGenerator->ReadFile("./gamma_definitions/138La.txt");
+      fGammaGenerator->SetSize(B1::kArraySizeX, B1::kArraySizeY, B1::kArraySizeZ);
+    }
   }
 
   //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -11,7 +11,7 @@
             "program": "${workspaceFolder}/build/exampleB1",
             "args": [
                 "run1.mac",
-                "work/output/co60"
+                "test"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
